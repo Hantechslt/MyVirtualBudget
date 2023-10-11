@@ -1,0 +1,11 @@
+{
+  "expo": {
+    "name": "myvirtualbudget",
+    "slug": "myvirtualbudget",
+    "version": "1.0.0",
+    "assetBundlePatterns": [
+      "**/*"
+    ]
+  },
+  "name": "myvirtualbudget"
+}

@@ -1,0 +1,65 @@
+{
+  "project_info": {
+    "project_number": "296808226826",
+    "firebase_url": "https://myvitualbudget-default-rtdb.firebaseio.com",
+    "project_id": "myvitualbudget",
+    "storage_bucket": "myvitualbudget.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:296808226826:android:0b996b2d2f3a7351273ff3",
+        "android_client_info": {
+          "package_name": "com.myvirtualbudget"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "296808226826-elibio2c542mlt6kavp3c3obsg8avgaf.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.myvirtualbudget",
+            "certificate_hash": "fe1fbf16263bab1656338d09364c8b2abbe27746"
+          }
+        },
+        {
+          "client_id": "296808226826-h0ojm5q605o09vtkbal1el5ef7op8k7q.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.myvirtualbudget",
+            "certificate_hash": "509f33a13e01e73adbea9e7bb02a108055a5ca6b"
+          }
+        },
+        {
+          "client_id": "296808226826-j621abifv7a8bha323e2f4i65e6ld457.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.myvirtualbudget",
+            "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
+          }
+        },
+        {
+          "client_id": "296808226826-s8ieob37cs3jkim48so1ubmaroct8776.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBqtuVGOUf81m41o5UE8Tkr77s3qLfABS8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "296808226826-s8ieob37cs3jkim48so1ubmaroct8776.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      },
+      "admob_app_id": "ca-app-pub-3903044833996589~6692270045"
+    }
+  ],
+  "configuration_version": "1"
+}

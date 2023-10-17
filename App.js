@@ -1,16 +1,19 @@
-import * as React from "react";
+import React, { useEffect } from "react";
 import { Provider as PaperProvider } from "react-native-paper";
-import CustomTheme from "./src/themes/CustomTheme"; // Asegúrate de ajustar la ruta correcta
-import Budgets from "@Views/Budgets";
+import CustomTheme from "./src/themes/CustomTheme";
+import MainStack from "@Stacks/MainStack";
+import { NavigationContainer } from "@react-navigation/native";
 
+const App = () => {
+  useEffect(() => {}, []);
 
-const App=()=>{
- return (
-   <PaperProvider theme={CustomTheme.DarkTheme}>
-     <Budgets />
-   </PaperProvider>
- );
-}
+  return (
+    <PaperProvider theme={CustomTheme.DarkTheme}>
+      <NavigationContainer>
+        <MainStack />
+      </NavigationContainer>
+    </PaperProvider>
+  );
+};
 
 export default App;
-

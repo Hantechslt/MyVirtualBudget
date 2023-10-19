@@ -29,16 +29,17 @@ const DarkTheme = {
     outline: "rgb(150 ,142 ,152 )",
     outlineVariant: "rgb(74 ,69 ,78 )",
     shadow: "rgb(0 ,0 ,0 )",
-    //Verdes//
-    VerdeOscuro: "rgb(0, 100, 0)",
-    VerdeOliva: "rgb(85, 107, 47)",
-    VerdeEsmeralda: "rgb(0, 128, 0)",
-    VerdeMenta: "rgb(0, 255, 0)",
-    //Rojos
-    RojoOscuro:"rgb(139, 0, 0)",
-    RojoCarmesi:"rgb(220, 20, 60)",
-    RojoEscarlata:"rgb(255, 69, 0)",
-    RojoVino:"rgb(128, 0, 0)",
+    //greens//
+    darkGreen: "rgb(0, 100, 0)",
+    oliveGreen: "rgb(85, 107, 47)",
+    emeraldGreen: "rgb(0, 128, 0)",
+    mintGreen: "rgb(0, 255, 0)",
+    //reds
+    darkRed: "rgb(139, 0, 0)",
+    crimsonRed: "rgb(220, 20, 60)",
+    scarletRed: "rgb(255, 69, 0)",
+    wineRed: "rgb(128, 0, 0)",
+
     scrim: "rgb(0 ,0 ,0 )",
     inverseSurface: "rgb(231 ,225 ,229 )",
     inverseOnSurface: "rgb(50 ,47 ,51 )",

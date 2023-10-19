@@ -1,51 +1,51 @@
 //React
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect } from "react";
 import { createStackNavigator } from "@react-navigation/stack";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import DrawerNav from "@Nav/Drawer";
 import { useTheme } from "react-native-paper";
-import MyBudgetApp from "@Apis/MyBudgetApp";
+import auth from "@react-native-firebase/auth";
+
 //views
-//import Budgets from "@Views/Budgets";
-import Phone from "@PhoneAuth/Phone";
-import Otp from "@PhoneAuth/Otp";
+import VerifyPhone from "@PhoneAuth/VerifyPhone";
+import VerifyOtp from "@PhoneAuth/VerifyOtp";
+import CreateUpdatePeriod from "@BudgetByPeriod/CreateUpdatePeriod";
+
+import UserStack from "@Stacks/UserStack";
+import AuthStack from "@Stacks/AuthStack";
 const Stack = createStackNavigator();
 
-const MainStack = ({ navigation }) => {
+/**
+ *
+ * @returns Verificar si el usuario esta autenticado, si esta autenticado entonces lo lleva a la pantalla de inicio si no a la de autenticación.
+ */
+const MainStack = () => {
   const theme = useTheme();
+  const [isAuth, setIsAuth] = useState(false);
 
   useEffect(() => {
-    MyBudgetApp.getMyAppInfo().then((res) => {
-      console.log(res);
+    //Escuha si el estado de la autenticación cambia.
+    auth().onAuthStateChanged((user) => {
+      if (user) {
+        setIsAuth(true);
+      }
     });
   }, []);
 
   return (
     <Stack.Navigator>
-      <Stack.Screen
-        name="Phone"
-        component={Phone}
-        options={{
-          cardStyle: { backgroundColor: theme.colors.background },
-          headerShown: false,
-        }}
-      />
-      <Stack.Screen
-        name="Otp"
-        component={Otp}
-        options={{
-          cardStyle: { backgroundColor: theme.colors.background },
-          headerShown: false,
-        }}
-      />
-      <Stack.Screen
-        name="DrawerNav"
-        component={DrawerNav}
-        options={{
-          cardStyle: { backgroundColor: theme.colors.background },
-          headerShown: false,
-        }}
-      />
+      {isAuth ? (
+        <Stack.Screen
+          name="UserStack"
+          component={UserStack}
+          options={{ headerShown: false }}
+        />
+      ) : (
+        <Stack.Screen
+          name="AuthStack"
+          component={AuthStack}
+          options={{ headerShown: false }}
+        />
+      )}
     </Stack.Navigator>
   );
 };

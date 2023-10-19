@@ -1,0 +1,20 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@Contexts/*": ["./src/contexts/*"],
+      "@Utilities/*": ["./src/utilities/*"],
+      "@Themes/*": ["./src/themes/*"],
+      "@Styles/*":["./src/styles/*"],
+      "@Components/*":["./src/components/*"],
+
+      //Views
+      "@Stacks/*":["./src/shared/stacks/*"],
+      "@Budgets/*":["./src/shared/views/budget/*"],
+      "@PhoneAuth/*":["./src/shared/views/phoneAuth/*"],
+      "@BudgetByPeriod/*":["./src/shared/views/budgetByPeriod/*"],
+      "@SpendingByBudget/*":["./src/shared/views/spending/*"],
+
+    }
+  }
+}

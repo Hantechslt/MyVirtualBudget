@@ -1,47 +1,50 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { View } from "react-native";
 import { TextInput, Button, Snackbar } from "react-native-paper";
 import auth from "@react-native-firebase/auth";
+import MainStyleSheet from "@Styles/MainStyleSheet";
 
-const OTPInput = ({ navigation, route }) => {
+const VerifyOtp = ({ navigation, route }) => {
   const [otp, setOTP] = useState("");
   const [snackbarVisible, setSnackbarVisible] = useState(false);
   const [phone] = useState(route.params?.phone);
   const [codeZone] = useState(route.params?.codeZone);
   const [confirm, setConfirm] = useState(null);
+  const [waitOtp, setWaitOtp] = useState(true);
+  const OtpNumberRef = useRef();
 
   useEffect(() => {
-    console.log(phone);
-    console.log(codeZone);
     signInWithPhoneNumber();
   }, []);
 
-  async function signInWithPhoneNumber() {
+  signInWithPhoneNumber = () => {
     try {
       var phoneNum = codeZone + "" + phone;
-      console.log(phoneNum);
-      console.log(auth);
-      const confirmation = await auth().signInWithPhoneNumber(phoneNum);
-      setConfirm(confirmation);
-      console.log(confirmation);
+      auth()
+        .signInWithPhoneNumber(phoneNum)
+        .then((confirmation) => {
+          setConfirm(confirmation);
+          setWaitOtp(false);
+        });
     } catch (e) {
       console.log(e);
     }
-  }
-  async function handleConfirmCode() {
+  };
+  handleConfirmCode = async () => {
     try {
       console.log(otp);
-       const response = await confirm.confirm(otp);
+      const response = await confirm.confirm(otp);
       if (response) {
         console.log(response);
+        navigation.navigate("DrawerNav");
       }
     } catch (error) {
       console.log(error);
     }
-  }
+  };
 
   return (
-    <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+    <View style={MainStyleSheet.mainViewContainer}>
       <TextInput
         label="OTP de 6 dígitos"
         value={otp}
@@ -50,11 +53,13 @@ const OTPInput = ({ navigation, route }) => {
         mode="outlined"
         keyboardType="numeric"
         maxLength={6}
-      />      
+        ref={OtpNumberRef}
+      />
       <Button
         mode="contained-tonal"
-        style={{ width: "100%", marginTop: "3%" }}
+        style={MainStyleSheet.primaryButton}
         onPress={() => handleConfirmCode()}
+        disabled={waitOtp}
       >
         Verificar OTP
       </Button>
@@ -68,4 +73,4 @@ const OTPInput = ({ navigation, route }) => {
   );
 };
 
-export default OTPInput;
+export default VerifyOtp;

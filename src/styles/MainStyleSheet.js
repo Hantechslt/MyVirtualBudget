@@ -22,6 +22,11 @@ const MainStyleSheet = StyleSheet.create({
     marginTop: "3%",
     borderRadius: 7,
   },
+  cardButton: {
+    width: "25%",
+    marginTop: "3%",
+    borderRadius: 7,
+  },
   selectButton: {
     borderRadius: 7,
     width: "100%",
@@ -40,6 +45,19 @@ const MainStyleSheet = StyleSheet.create({
   viewInputPhone: {
     paddingLeft: "5%",
     width: "70%",
+  },
+  backView: {
+    height: "100%",
+  },
+  frontView: {
+    height: "95%",
+    marginHorizontal: "5%",    
+  },
+  primaryCard: {
+    borderWidth: 0.5,
+    borderColor: "#FFFFFF",
+    borderRadius: 7,
+    marginVertical: "2%",
   },
   noAuthenticationContainer: {
     width: "100%",

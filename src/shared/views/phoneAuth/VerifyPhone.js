@@ -1,29 +1,35 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useContext } from "react";
 import { View } from "react-native";
 import {
   TextInput,
   Button,
   Snackbar,
-  Checkbox,
   useTheme,
   Text,
 } from "react-native-paper";
 import SelectModal from "@Components/SelectModal";
 import CountryCode from "@Config/CountryCode";
 import MainStyleSheet from "@Styles/MainStyleSheet";
+import { MainContext } from "@Contexts/MainContext";
 
-const PhoneNumberInput = ({ navigation }) => {
+const VerifyPhone = ({ navigation }) => {
+  const mainVariables = useContext(MainContext);
   const theme = useTheme();
   const [areaCode, setAreaCode] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
   const [snackbarVisible, setSnackbarVisible] = useState(false);
   const phoneNumberRef = useRef();
 
-  useEffect(() => {}, []);
+  useEffect(() => {
+    if (mainVariables.ENVIRONMENT == "DEV") {
+      setAreaCode("+506");
+      setPhoneNumber("88888888");
+    }
+  }, []);
 
   const handleAuthentication = () => {
     if (phoneNumber) {
-      navigation.navigate("Otp", {
+      navigation.navigate("VerifyOtp", {
         codeZone: areaCode,
         phone: phoneNumber,
       });
@@ -90,4 +96,4 @@ const PhoneNumberInput = ({ navigation }) => {
   );
 };
 
-export default PhoneNumberInput;
+export default VerifyPhone;

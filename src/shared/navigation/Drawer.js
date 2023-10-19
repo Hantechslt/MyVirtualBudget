@@ -1,7 +1,10 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { View, Text } from "react-native";
 import { useTheme } from "react-native-paper";
-
+import MyBudgetApp from "@Apis/MyBudgetApp";
+import Utilities from "@Utilities/Utilities";
+import auth from "@react-native-firebase/auth";
+import Budgets from "@Budgets/Budgets";
 import { createDrawerNavigator } from "@react-navigation/drawer";
 const Drawer = createDrawerNavigator();
 
@@ -10,6 +13,14 @@ function DrawerNav() {
 
   // Componente Feed
   function Feed() {
+    useEffect(() => {
+      //console.log(Utilities.getTimeStamp());
+      //console.log(auth().currentUser.uid);
+      /*MyBudgetApp.getMyAppInfo().then((res) => {
+        console.log(res);
+      });*/
+    }, []);
+
     return (
       <View
         style={{
@@ -50,8 +61,8 @@ function DrawerNav() {
       }}
     >
       <Drawer.Screen
-        name="Presupuestos"
-        component={Feed}
+        name="Mis Finanzas"
+        component={Budgets}
         options={{
           headerStyle: {
             backgroundColor: theme.colors.background,
@@ -63,7 +74,6 @@ function DrawerNav() {
           drawerLabel: "Hola",
         }}
       />
-      <Drawer.Screen name="Article" component={Article} />
     </Drawer.Navigator>
   );
 }

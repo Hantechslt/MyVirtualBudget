@@ -1,4 +1,4 @@
-//Estructura para almacenar los gastos de los presupuestos. 
+//Estructura para almacenar los gastos de los presupuestos.
 BudgetSpending = {
   UserId: {
     Month: {
@@ -12,13 +12,13 @@ BudgetSpending = {
     },
   },
 };
-//Estructura de los presupuestos. 
+//Estructura de los presupuestos.
 Budget = {
   UserId: {
     Month: {
       UniqueID: {
         amount: 400000,
-        budgetName: "GASTOS CASA",               
+        budgetName: "GASTOS CASA",
         state: true,
         used: 161080,
       },
@@ -46,4 +46,37 @@ Budget = {
     });
 };
 
- */ */
+ */
+
+dev = {
+  rules: {
+    //Reglas de DEV, solo tiene acceso este uid numero +506 8888 8888
+    MyBudgetDEV: {
+      ".read": "auth != null && auth.uid === 'invGKP55rrOc8dp38CJRqLAGfYs2'",
+      ".write": "auth != null && auth.uid === 'invGKP55rrOc8dp38CJRqLAGfYs2'",
+    },
+    UsersDEV: {
+      $uid: {
+        ".read": "auth != null && auth.uid === 'invGKP55rrOc8dp38CJRqLAGfYs2'",
+        ".write": "auth != null && auth.uid === 'invGKP55rrOc8dp38CJRqLAGfYs2'",
+      },
+    },
+
+    //Tablas de PRD
+    MyBudget: {
+      ".read": "auth != null && auth.uid === 'invGKP55rrOc8dp38CJRqLAGfYs2'",
+      ".write": "auth != null && auth.uid === 'invGKP55rrOc8dp38CJRqLAGfYs2'",
+    },
+    Users: {
+      $uid: {
+        ".read": "auth != null && auth.uid === 'invGKP55rrOc8dp38CJRqLAGfYs2'",
+        ".write": "auth != null && auth.uid === 'invGKP55rrOc8dp38CJRqLAGfYs2'",
+      },
+    },
+    ServerTime: {
+      ".read": "auth != null",
+      ".write": "auth != null",
+    },
+    //Tabla de desarrollo
+  },
+};

@@ -3,6 +3,7 @@ import { initializeApp } from '@react-native-firebase/app';
 import { getDatabase } from '@react-native-firebase/database';
 import { getAuth } from "@react-native-firebase/auth";
 
+
 const firebaseConfig = {
   apiKey: "AIzaSyBn4Q8Th181Lk01sCkw4yGH75Qmy2R9-5M",
   authDomain: "myvitualbudget.firebaseapp.com",
@@ -23,6 +24,7 @@ class Firebase {
     const app = initializeApp(firebaseConfig);
     this.db = getDatabase(app);
     this.auth = getAuth(app); 
+
 
     Object.freeze(this);
     Firebase.singletonFirebase = this;

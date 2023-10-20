@@ -51,7 +51,7 @@ const MainStyleSheet = StyleSheet.create({
   },
   frontView: {
     height: "95%",
-    marginHorizontal: "5%",    
+    marginHorizontal: "5%",
   },
   primaryCard: {
     borderWidth: 0.5,
@@ -69,6 +69,8 @@ const MainStyleSheet = StyleSheet.create({
   },
   modalContent: {
     backgroundColor: "white",
+    height: "100%",
+    maxHeight:"100%",
     padding: 16,
   },
 });

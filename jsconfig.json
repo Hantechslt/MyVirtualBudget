@@ -7,6 +7,8 @@
       "@Themes/*": ["./src/themes/*"],
       "@Styles/*":["./src/styles/*"],
       "@Components/*":["./src/components/*"],
+      "@Apis/*":["./src/apis/*"],
+      "@Config/*":["./src/config/*"],
 
       //Views
       "@Stacks/*":["./src/shared/stacks/*"],

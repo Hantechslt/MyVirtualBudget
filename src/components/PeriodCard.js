@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import { useNavigation } from "@react-navigation/native";
 
 import { View } from "react-native";
@@ -11,15 +11,49 @@ import {
   useTheme,
 } from "react-native-paper";
 import MainStyleSheet from "@Styles/MainStyleSheet";
-import { MainContext, mainVariables } from "@Contexts/MainContext";
+import { MainContext } from "@Contexts/MainContext";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import Ionicons from "react-native-vector-icons/Ionicons";
+import Utilities from "@Utilities/Utilities";
+import SelectModal from "@Components/SelectModal";
 
-const PeriodCard = () => {
+const PeriodCard = (props) => {
   const theme = useTheme();
   const mainVariables = useContext(MainContext);
   const navigation = useNavigation();
 
+  const [openSelectModal, setOpenSelectModal] = useState(false);
+  const [formatDate, setFormatDate] = useState("");
+
+  useEffect(() => {
+    console.log(props);
+    setFormatDate(
+      Utilities.getFormatPeriodDate(
+        props.period.startDate,
+        props.period.endDate
+      )
+    );
+  }, []);
+
+  const handleOpenSelectModal = () => {
+    mainVariables.PERIODS.forEach((period) => {
+      period["label"] =
+        "Periodo: " +
+        Utilities.getFormatPeriodDate(period.startDate, period.endDate);
+      period["description"] = Utilities.getLocaleCurrency(
+        period.amount,
+        "es-CR",
+        "CRC"
+      );
+    });
+    setOpenSelectModal(true);
+  };
+
+  const handleSelectedItem = (item) => {
+    mainVariables.SELECTEDPERIOD = item;
+    props.selectedPeriod(item);
+    console.log(item);
+  };
   return (
     <Card
       style={{
@@ -39,7 +73,7 @@ const PeriodCard = () => {
             Periodo
           </Text>
         }
-        subtitle={<Text variant="bodySmall">02/12/2023 - 04/12/2023</Text>}
+        subtitle={<Text variant="bodySmall">{formatDate}</Text>}
         left={(props) => (
           <Avatar.Icon
             {...props}
@@ -54,9 +88,8 @@ const PeriodCard = () => {
             )}
           />
         )}
-        right={(props) => (
+        right={() => (
           <IconButton
-            {...props}
             icon={() => (
               <MaterialCommunityIcons
                 name="rotate-3d-variant"
@@ -67,13 +100,22 @@ const PeriodCard = () => {
               />
             )}
             onPress={() => {
-              navigation.navigate("CreateUpdatePeriod");
+              handleOpenSelectModal(true);
             }}
           />
         )}
       />
       <Divider style={{ marginHorizontal: "5%" }} />
       <Card.Content>
+        {mainVariables.PERIODS !== null ? (
+          <SelectModal
+            open={openSelectModal}
+            close={setOpenSelectModal.bind(null)}
+            items={mainVariables.PERIODS}
+            setValue={handleSelectedItem.bind(null)}
+            title={"Seleccione un Periodo"}
+          ></SelectModal>
+        ) : null}
         <View style={MainStyleSheet.viewRow}>
           <View>
             <Text
@@ -89,16 +131,16 @@ const PeriodCard = () => {
               }}
               variant="titleLarge"
             >
-              1000000
+              {Utilities.getLocaleCurrency(props.period.amount, "en-CR", "CRC")}
             </Text>
           </View>
           <View>
             <Text variant="titleMedium">Gastos</Text>
             <Text
-              style={{ fontWeight: "bold", color: theme.colors.onBackground }}
+              style={{ fontWeight: "bold", color: theme.colors.emeraldGreen }}
               variant="titleLarge"
             >
-              510000
+              {Utilities.getLocaleCurrency(props.period.used, "en-CR", "CRC")}
             </Text>
           </View>
         </View>
@@ -120,19 +162,28 @@ const PeriodCard = () => {
                 }}
               />
             )}
-            onPress={() => navigation.navigate("CreateUpdatePeriod")}
+            onPress={() =>
+              navigation.navigate("CreateUpdatePeriod", {
+                period: null,
+              })
+            }
           />
           <IconButton
             icon={() => (
               <MaterialCommunityIcons
-                name="account-cash"
+                name="folder-table"
                 size={mainVariables.ICONZISE}
                 style={{
                   color: theme.colors.primary,
                 }}
               />
             )}
-            onPress={() => navigation.navigate("CreateUpdateBudget")}
+            onPress={() =>
+              navigation.navigate("CreateUpdateBudget", {
+                period: props.period,
+                budget: null,
+              })
+            }
           />
           <IconButton
             icon={() => (
@@ -144,7 +195,11 @@ const PeriodCard = () => {
                 }}
               />
             )}
-            onPress={() => {}}
+            onPress={() =>
+              navigation.navigate("CreateUpdatePeriod", {
+                period: props.period,
+              })
+            }
           />
         </View>
       </Card.Actions>

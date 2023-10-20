@@ -13,11 +13,11 @@ import {
   useTheme,
 } from "react-native-paper";
 import { MainContext, mainVariables } from "@Contexts/MainContext";
-
+import Utilities from "@Utilities/Utilities";
 import MainStyleSheet from "@Styles/MainStyleSheet";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 
-const SpendingCard = () => {
+const BudgetByPeriodCard = (props) => {
   const theme = useTheme();
   const mainVariables = useContext(MainContext);
   const navigation = useNavigation();
@@ -35,16 +35,22 @@ const SpendingCard = () => {
             style={{ color: theme.colors.onBackground }}
             variant="titleMedium"
           >
-            Gastos personales
+            {props.budget.budgetName}
           </Text>
         }
-        subtitle={<Text variant="bodySmall">100000 / 15000</Text>}
+        subtitle={
+          <Text variant="bodySmall">
+            {Utilities.getLocaleCurrency(props.budget.amount, "en-CR", "CRC") +
+              " / " +
+              Utilities.getLocaleCurrency(props.budget.used, "en-CR", "CRC")}
+          </Text>
+        }
         left={(props) => (
           <Avatar.Icon
             {...props}
             icon={() => (
               <MaterialCommunityIcons
-                name="account-cash"
+                name="folder-table"
                 size={mainVariables.ICONZISE}
                 style={{
                   color: theme.colors.shadow,
@@ -81,8 +87,15 @@ const SpendingCard = () => {
                 surfaceVariant: theme.colors.shadow,
               },
             }}
-            progress={0.5}
-            color={theme.colors.primary}
+            progress={Utilities.getRatios(
+              props.budget.amount,
+              props.budget.used
+            )}
+            color={
+              props.budget.used >= props.budget.amount
+                ? theme.colors.darkRed
+                : theme.colors.primary
+            }
           />
         </View>
       </Card.Content>
@@ -115,7 +128,12 @@ const SpendingCard = () => {
                 }}
               />
             )}
-            onPress={() => navigation.navigate("CreateUpdateSpending")}
+            onPress={() =>
+              navigation.navigate("CreateUpdateSpending", {
+                budget: props.budget,
+                spending: null,
+              })
+            }
           />
         </View>
       </Card.Actions>
@@ -123,4 +141,4 @@ const SpendingCard = () => {
   );
 };
 
-export default SpendingCard;
+export default BudgetByPeriodCard;

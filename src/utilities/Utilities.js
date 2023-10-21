@@ -58,6 +58,13 @@ class Utilities {
 
     return ratio;
   }
+
+  removeArrayItem(array, property, value) {
+    return array.filter((item) => item[property] !== value);
+  }
+  sortByIndex(array, property) {
+    return array.sort((a, b) => b[property] - a[property]);
+  }
 }
 
 export default new Utilities();

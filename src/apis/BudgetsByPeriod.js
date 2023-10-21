@@ -8,18 +8,18 @@ import {
   orderByChild,
 } from "@react-native-firebase/database";
 
-import firebaseSingleton from "@Config/Firebase";
+import firebaseSingleton from "@FirebaseDB/Firebase";
 import auth from "@react-native-firebase/auth";
 import Utilities from "@Utilities/Utilities";
-import FirebaseRefStructure from "@Config/FirebaseRefStructure";
-
+import FirebaseRefStructure from "@FirebaseDB/FirebaseRefStructure";
+import Config from "@Config/Config";
 class BudgetsByPeriod {
-  getBudgetList = (periodKey, context) => {
+  getBudgetList = (periodKey) => {
     const data = [];
     const refBD = FirebaseRefStructure.getPeriodsStructure(
       auth().currentUser.uid,
       periodKey,
-      context.ENVIRONMENT
+      Config.ENVIRONMENT
     );
     const dbRef = ref(firebaseSingleton.db, refBD);
     const sortedQuery = query(dbRef, orderByChild("index"));
@@ -38,63 +38,26 @@ class BudgetsByPeriod {
         console.error(error);
       });
   };
-  /**
-   * Crear un nuevo periodo
-   * @param {*} objBudgetByPeriod
-   * @returns
-   */
-  createBudget = (objBudgetByPeriod, context) => {
-    const index = Utilities.getTimeStamp();
-    objBudgetByPeriod["index"] = index;
+
+  createUpdateBudget = (objBudgetByPeriod) => {
     const refBD = FirebaseRefStructure.CRDbudgetStructure(
       auth().currentUser.uid,
       objBudgetByPeriod.periodKey,
-      index,
-      context.ENVIRONMENT
+      objBudgetByPeriod.index,
+      Config.ENVIRONMENT
     );
-    const dbRef = ref(firebaseSingleton.db, refBD);
-    console.log(dbRef);
+    const dbRef = ref(firebaseSingleton.db, refBD);    
     return update(dbRef, objBudgetByPeriod).then(() => {
       return true;
     });
   };
 
-  /**
-   * Actualizar un periodo
-   * @param {*} objBudgetByPeriod
-   * @returns
-   */
-  updateBudget = (objBudgetByPeriod, context) => {
+  removeBudget = (objBudgetByPeriod) => {
     const refBD = FirebaseRefStructure.CRDbudgetStructure(
       auth().currentUser.uid,
       objBudgetByPeriod.periodKey,
       objBudgetByPeriod.index,
-      context.ENVIRONMENT
-    );
-    const dbRef = ref(firebaseSingleton.db, refBD);
-
-    return update(dbRef, objBudgetByPeriod)
-      .then(() => {
-        return true;
-      })
-      .catch((error) => {
-        console.error(error);
-        return false;
-      });
-  };
-
-  /**
-   * Eliminar periodo
-   * @param {*} index
-   * @param {*} context
-   * @returns
-   */
-  removeBudget = (objBudgetByPeriod, context) => {
-    const refBD = FirebaseRefStructure.CRDbudgetStructure(
-      auth().currentUser.uid,
-      objBudgetByPeriod.periodKey,
-      objBudgetByPeriod.index,
-      context.ENVIRONMENT
+      Config.ENVIRONMENT
     );
     const dbRef = ref(firebaseSingleton.db, refBD);
     return remove(dbRef)

@@ -16,27 +16,28 @@ import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityI
 import Ionicons from "react-native-vector-icons/Ionicons";
 import Utilities from "@Utilities/Utilities";
 import SelectModal from "@Components/SelectModal";
+import Config from "@Config/Config";
 
 const PeriodCard = (props) => {
   const theme = useTheme();
-  const mainVariables = useContext(MainContext);
   const navigation = useNavigation();
 
   const [openSelectModal, setOpenSelectModal] = useState(false);
   const [formatDate, setFormatDate] = useState("");
+  const { PERIODS, SELECTED_PERIOD, updateSelectedPeriod } =
+    useContext(MainContext);
 
   useEffect(() => {
-    console.log(props);
     setFormatDate(
       Utilities.getFormatPeriodDate(
-        props.period.startDate,
-        props.period.endDate
+        SELECTED_PERIOD.startDate,
+        SELECTED_PERIOD.endDate
       )
     );
-  }, []);
+  }, [PERIODS]);
 
   const handleOpenSelectModal = () => {
-    mainVariables.PERIODS.forEach((period) => {
+    PERIODS.forEach((period) => {
       period["label"] =
         "Periodo: " +
         Utilities.getFormatPeriodDate(period.startDate, period.endDate);
@@ -49,11 +50,11 @@ const PeriodCard = (props) => {
     setOpenSelectModal(true);
   };
 
-  const handleSelectedItem = (item) => {
-    mainVariables.SELECTEDPERIOD = item;
-    props.selectedPeriod(item);
-    console.log(item);
+  const handleSelectedItem = (period) => {
+    props.handleChangePeriod(period);
+    updateSelectedPeriod(period);
   };
+
   return (
     <Card
       style={{
@@ -80,7 +81,7 @@ const PeriodCard = (props) => {
             icon={() => (
               <Ionicons
                 name="wallet"
-                size={mainVariables.ICONZISE}
+                size={Config.ICON_SIZE}
                 style={{
                   color: theme.colors.shadow,
                 }}
@@ -93,7 +94,7 @@ const PeriodCard = (props) => {
             icon={() => (
               <MaterialCommunityIcons
                 name="rotate-3d-variant"
-                size={mainVariables.ICONZISE}
+                size={Config.ICON_SIZE}
                 style={{
                   color: theme.colors.primary,
                 }}
@@ -107,11 +108,11 @@ const PeriodCard = (props) => {
       />
       <Divider style={{ marginHorizontal: "5%" }} />
       <Card.Content>
-        {mainVariables.PERIODS !== null ? (
+        {PERIODS !== null ? (
           <SelectModal
             open={openSelectModal}
             close={setOpenSelectModal.bind(null)}
-            items={mainVariables.PERIODS}
+            items={PERIODS}
             setValue={handleSelectedItem.bind(null)}
             title={"Seleccione un Periodo"}
           ></SelectModal>
@@ -131,7 +132,11 @@ const PeriodCard = (props) => {
               }}
               variant="titleLarge"
             >
-              {Utilities.getLocaleCurrency(props.period.amount, "en-CR", "CRC")}
+              {Utilities.getLocaleCurrency(
+                SELECTED_PERIOD.amount,
+                "en-CR",
+                "CRC"
+              )}
             </Text>
           </View>
           <View>
@@ -140,7 +145,11 @@ const PeriodCard = (props) => {
               style={{ fontWeight: "bold", color: theme.colors.emeraldGreen }}
               variant="titleLarge"
             >
-              {Utilities.getLocaleCurrency(props.period.used, "en-CR", "CRC")}
+              {Utilities.getLocaleCurrency(
+                SELECTED_PERIOD.used,
+                "en-CR",
+                "CRC"
+              )}
             </Text>
           </View>
         </View>
@@ -156,7 +165,7 @@ const PeriodCard = (props) => {
             icon={() => (
               <Ionicons
                 name="wallet"
-                size={mainVariables.ICONZISE}
+                size={Config.ICON_SIZE}
                 style={{
                   color: theme.colors.primary,
                 }}
@@ -172,7 +181,7 @@ const PeriodCard = (props) => {
             icon={() => (
               <MaterialCommunityIcons
                 name="folder-table"
-                size={mainVariables.ICONZISE}
+                size={Config.ICON_SIZE}
                 style={{
                   color: theme.colors.primary,
                 }}
@@ -180,7 +189,7 @@ const PeriodCard = (props) => {
             )}
             onPress={() =>
               navigation.navigate("CreateUpdateBudget", {
-                period: props.period,
+                period: SELECTED_PERIOD,
                 budget: null,
               })
             }
@@ -189,7 +198,7 @@ const PeriodCard = (props) => {
             icon={() => (
               <MaterialCommunityIcons
                 name="file-edit-outline"
-                size={mainVariables.ICONZISE}
+                size={Config.ICON_SIZE}
                 style={{
                   color: theme.colors.primary,
                 }}
@@ -197,7 +206,7 @@ const PeriodCard = (props) => {
             )}
             onPress={() =>
               navigation.navigate("CreateUpdatePeriod", {
-                period: props.period,
+                period: SELECTED_PERIOD,
               })
             }
           />

@@ -9,6 +9,7 @@
       "@Components/*":["./src/components/*"],
       "@Apis/*":["./src/apis/*"],
       "@Config/*":["./src/config/*"],
+      "@FirebaseDB/*":["./src/firebase/*"],
 
       //Views
       "@Stacks/*":["./src/shared/stacks/*"],

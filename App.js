@@ -3,21 +3,23 @@ import { Provider as PaperProvider } from "react-native-paper";
 import CustomTheme from "./src/themes/CustomTheme";
 import MainStack from "@Stacks/MainStack";
 import { NavigationContainer } from "@react-navigation/native";
-import { MainContext, mainVariables } from "@Contexts/MainContext";
+import {MainProvider } from "@Contexts/MainContext";
 
 //Este import se utiliza para inicializar la base de datos.
-import Firebase from "@Config/Firebase";
+import Firebase from "@FirebaseDB/Firebase";
+
+//const mainVariables = useContext(MainContext);
 
 const App = () => {
   useEffect(() => {}, []);
 
   return (
     <PaperProvider theme={CustomTheme.DarkTheme}>
-      <MainContext.Provider value={mainVariables}>
+      <MainProvider>
         <NavigationContainer>
           <MainStack />
         </NavigationContainer>
-      </MainContext.Provider>
+      </MainProvider>
     </PaperProvider>
   );
 };

@@ -11,13 +11,14 @@ import {
 } from "react-native-paper";
 import MainStyleSheet from "@Styles/MainStyleSheet";
 import Utilities from "@Utilities/Utilities";
-import { MainContext, mainVariables } from "@Contexts/MainContext";
+import { MainContext } from "@Contexts/MainContext";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import BudgetsByPeriod from "@Apis/BudgetsByPeriod";
+import BudgetByPeriodUtils from "@Budgets/BudgetByPeriodUtils";
+import Config from "@Config/Config";
 
 const CreateUpdateBudget = ({ navigation, route }) => {
   const theme = useTheme();
-  const mainVariables = useContext(MainContext);
   const [isEdit, setIsEdit] = useState(false);
 
   const [period] = useState(route.params?.period);
@@ -29,10 +30,15 @@ const CreateUpdateBudget = ({ navigation, route }) => {
   const [value, setValue] = useState("");
   const [budgetName, setBudgetName] = useState("");
 
+  const { BUDGETS_BY_PERIOD, updateBudgetsByPeriod } = useContext(MainContext);
+
+  const budgetByPeriodUtils = new BudgetByPeriodUtils(
+    BUDGETS_BY_PERIOD,
+    updateBudgetsByPeriod
+  );
+
   useEffect(() => {
-    console.log(period);
     if (budgetByPeriod !== null) {
-      console.log(budgetByPeriod);
       setIsEdit(true);
     }
     setFormatDate(
@@ -72,35 +78,31 @@ const CreateUpdateBudget = ({ navigation, route }) => {
     };
     if (isCreate) {
       objBudgetByPeriod["used"] = 0;
-      BudgetsByPeriod.createBudget(objBudgetByPeriod, mainVariables).then(
-        (res) => {
-          if (res) console.log("Agregado");
-        }
-      );
+      objBudgetByPeriod["index"] = Utilities.getTimeStamp();
+      BudgetsByPeriod.createUpdateBudget(objBudgetByPeriod).then((res) => {
+        budgetByPeriodUtils.handleCreateBudget(objBudgetByPeriod);
+        if (res) console.log("Agregado");
+      });
     } else {
       objBudgetByPeriod["used"] = budgetByPeriod.used;
       objBudgetByPeriod["index"] = budgetByPeriod.index;
-      BudgetsByPeriod.updateBudget(objBudgetByPeriod, mainVariables).then(
-        (res) => {
-          if (res) console.log("Editado");
-        }
-      );
+      BudgetsByPeriod.createUpdateBudget(objBudgetByPeriod).then((res) => {
+        budgetByPeriodUtils.updateBudgetsByPeriod(objBudgetByPeriod);
+        if (res) console.log("Editado");
+      });
     }
   };
   const handleDeleteBudget = () => {
     objBudgetByPeriod = {
       index: budgetByPeriod.index,
-      periodKey: period.index,
     };
-    BudgetsByPeriod.removeBudget(objBudgetByPeriod, mainVariables).then(
-      (res) => {
-        if (res) {
-          console.log("se elimino");
-          setIsEdit(false);
-          initVariables();
-        }
+    BudgetsByPeriod.removeBudget(objBudgetByPeriod).then((res) => {
+      if (res) {
+        budgetByPeriodUtils.handleRemoveBudget(objBudgetByPeriod);
+        setIsEdit(false);
+        initVariables();
       }
-    );
+    });
   };
   return (
     <View
@@ -139,7 +141,7 @@ const CreateUpdateBudget = ({ navigation, route }) => {
               icon={() => (
                 <MaterialCommunityIcons
                   name="folder-table"
-                  size={mainVariables.ICONZISE}
+                  size={Config.ICON_SIZE}
                   style={{
                     color: theme.colors.shadow,
                   }}

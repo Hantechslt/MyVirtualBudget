@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
 import { View } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 
@@ -9,18 +9,20 @@ import {
   Text,
   Divider,
   ProgressBar,
-  Button,
   useTheme,
 } from "react-native-paper";
-import { MainContext, mainVariables } from "@Contexts/MainContext";
 import Utilities from "@Utilities/Utilities";
 import MainStyleSheet from "@Styles/MainStyleSheet";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 
+import Config from "@Config/Config";
+
 const BudgetByPeriodCard = (props) => {
   const theme = useTheme();
-  const mainVariables = useContext(MainContext);
   const navigation = useNavigation();
+  useEffect(() => {
+    console.log(props);
+  }, []);
 
   return (
     <Card
@@ -51,7 +53,7 @@ const BudgetByPeriodCard = (props) => {
             icon={() => (
               <MaterialCommunityIcons
                 name="folder-table"
-                size={mainVariables.ICONZISE}
+                size={Config.ICON_SIZE}
                 style={{
                   color: theme.colors.shadow,
                 }}
@@ -67,7 +69,7 @@ const BudgetByPeriodCard = (props) => {
               icon={() => (
                 <MaterialCommunityIcons
                   name="file-edit-outline"
-                  size={mainVariables.ICONZISE}
+                  size={Config.ICON_SIZE}
                   style={{
                     color: theme.colors.primary,
                   }}
@@ -110,7 +112,7 @@ const BudgetByPeriodCard = (props) => {
             icon={() => (
               <MaterialCommunityIcons
                 name="file-document-outline"
-                size={mainVariables.ICONZISE}
+                size={Config.ICON_SIZE}
                 style={{
                   color: theme.colors.primary,
                 }}
@@ -122,7 +124,7 @@ const BudgetByPeriodCard = (props) => {
             icon={() => (
               <MaterialCommunityIcons
                 name="plus"
-                size={mainVariables.ICONZISE}
+                size={Config.ICON_SIZE}
                 style={{
                   color: theme.colors.primary,
                 }}

@@ -8,16 +8,18 @@ import {
   orderByChild,
 } from "@react-native-firebase/database";
 
-import firebaseSingleton from "@Config/Firebase";
+import firebaseSingleton from "@FirebaseDB/Firebase";
 import auth from "@react-native-firebase/auth";
 import Utilities from "@Utilities/Utilities";
-import FirebaseRefStructure from "@Config/FirebaseRefStructure";
+import FirebaseRefStructure from "@FirebaseDB/FirebaseRefStructure";
+import Config from "@Config/Config";
+
 class Budgets {
-  getPeriodList = (context) => {
+  getPeriodList = () => {
     const data = [];
     const refBD = FirebaseRefStructure.getPeriodsStructure(
       auth().currentUser.uid,
-      context.ENVIRONMENT
+      Config.ENVIRONMENT
     );
     const dbRef = ref(firebaseSingleton.db, refBD);
     const sortedQuery = query(dbRef, orderByChild("index"));
@@ -29,7 +31,7 @@ class Budgets {
           });
         }
       })
-      .then(() => {        
+      .then(() => {
         return data;
       })
       .catch((error) => {
@@ -42,35 +44,13 @@ class Budgets {
    * @param {*} objPeriod
    * @returns
    */
-  createPeriod = (objPeriod, context) => {
-    const index = Utilities.getTimeStamp();
-    objPeriod["index"] = index;
-    const refBD = FirebaseRefStructure.CRDperiodStructure(
-      auth().currentUser.uid,
-      index,
-      context.ENVIRONMENT
-    );
-    const dbRef = ref(firebaseSingleton.db, refBD);
-    console.log(dbRef);
-    return update(dbRef, objPeriod).then(() => {
-      return true;
-    });
-  };
-
-  /**
-   * Actualizar un periodo
-   * @param {*} objPeriod
-   * @returns
-   */
-  updatePeriod = (objPeriod, context) => {
-    console.log(objPeriod);
+  createUpdatePeriod = (objPeriod) => {
     const refBD = FirebaseRefStructure.CRDperiodStructure(
       auth().currentUser.uid,
       objPeriod.index,
-      context.ENVIRONMENT
+      Config.ENVIRONMENT
     );
     const dbRef = ref(firebaseSingleton.db, refBD);
-
     return update(dbRef, objPeriod)
       .then(() => {
         return true;
@@ -87,11 +67,11 @@ class Budgets {
    * @param {*} context
    * @returns
    */
-  removePeriod = (index, context) => {
+  removePeriod = (index) => {
     const refBD = FirebaseRefStructure.CRDperiodStructure(
       auth().currentUser.uid,
       index,
-      context.ENVIRONMENT
+      Config.ENVIRONMENT
     );
     const dbRef = ref(firebaseSingleton.db, refBD);
     return remove(dbRef)

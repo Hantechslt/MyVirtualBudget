@@ -8,19 +8,19 @@ import {
   orderByChild,
 } from "@react-native-firebase/database";
 
-import firebaseSingleton from "@Config/Firebase";
+import firebaseSingleton from "@FirebaseDB/Firebase";
 import auth from "@react-native-firebase/auth";
 import Utilities from "@Utilities/Utilities";
-import FirebaseRefStructure from "@Config/FirebaseRefStructure";
-
+import FirebaseRefStructure from "@FirebaseDB/FirebaseRefStructure";
+import Config from "@Config/Config";
 class SpendingByBudget {
-  getSpendingList = (objBudget, context) => {
+  getSpendingList = (objBudget) => {
     const data = [];
     const refBD = FirebaseRefStructure.getSpendingStructure(
       auth().currentUser.uid,
       objBudget.periodKey,
       objBudget.index,
-      context.ENVIRONMENT
+      config.ENVIRONMENT
     );
     const dbRef = ref(firebaseSingleton.db, refBD);
     const sortedQuery = query(dbRef, orderByChild("index"));
@@ -44,7 +44,7 @@ class SpendingByBudget {
    * @param {*} objSpending
    * @returns
    */
-  createSpending = (objBudget, objSpending, context) => {
+  createSpending = (objBudget, objSpending) => {
     const index = Utilities.getTimeStamp();
     objSpending["index"] = index;
     const refBD = FirebaseRefStructure.CUDSpendingStructure(
@@ -52,9 +52,9 @@ class SpendingByBudget {
       objBudget.periodKey,
       objBudget.index,
       index,
-      context.ENVIRONMENT
+      config.ENVIRONMENT
     );
-    const dbRef = ref(firebaseSingleton.db, refBD);    
+    const dbRef = ref(firebaseSingleton.db, refBD);
     return update(dbRef, objSpending).then(() => {
       return true;
     });
@@ -65,13 +65,13 @@ class SpendingByBudget {
    * @param {*} objBudgetByPeriod
    * @returns
    */
-  updateSpending = (objBudget, objSpending, context) => {
+  updateSpending = (objBudget, objSpending) => {
     const refBD = FirebaseRefStructure.CUDSpendingStructure(
       auth().currentUser.uid,
       objBudget.periodKey,
       objBudget.index,
       objSpending.index,
-      context.ENVIRONMENT
+      config.ENVIRONMENT
     );
     const dbRef = ref(firebaseSingleton.db, refBD);
 
@@ -91,13 +91,13 @@ class SpendingByBudget {
    * @param {*} context
    * @returns
    */
-  removeSpending = (objBudget, objSpending, context) => {
+  removeSpending = (objBudget, objSpending) => {
     const refBD = FirebaseRefStructure.CUDSpendingStructure(
       auth().currentUser.uid,
       objBudget.periodKey,
       objBudget.index,
       objSpending.index,
-      context.ENVIRONMENT
+      config.ENVIRONMENT
     );
     const dbRef = ref(firebaseSingleton.db, refBD);
     return remove(dbRef)

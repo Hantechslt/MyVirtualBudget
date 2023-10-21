@@ -12,15 +12,17 @@ import {
 import MainStyleSheet from "@Styles/MainStyleSheet";
 import { DatePickerModal, en } from "react-native-paper-dates";
 import Utilities from "@Utilities/Utilities";
-import { MainContext, mainVariables } from "@Contexts/MainContext";
+import { MainContext } from "@Contexts/MainContext";
+import Config from "@Config/Config";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import moment from "moment";
 import Periods from "@Apis/Periods";
 
+import CreateUpdatePeriodUtils from "./CreateUpdatePeriodUtils";
+
 const CreateUpdatePeriod = ({ navigation, route }) => {
   const theme = useTheme();
-  const mainVariables = useContext(MainContext);
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
   const [openStartDate, setOpenStartDate] = useState(false);
@@ -32,6 +34,13 @@ const CreateUpdatePeriod = ({ navigation, route }) => {
   const [period] = useState(route.params?.period);
 
   const [isEdit, setIsEdit] = useState(false);
+
+  const { PERIODS, updatePeriods } = useContext(MainContext);
+
+  const createUpdatePeriodUtils = new CreateUpdatePeriodUtils(
+    PERIODS,
+    updatePeriods
+  );
 
   useEffect(() => {
     if (period !== null) {
@@ -61,10 +70,8 @@ const CreateUpdatePeriod = ({ navigation, route }) => {
 
   const onConfirmStartDate = useCallback(
     (params) => {
-      console.log(params);
       setOpenStartDate(false);
       setStartDate(params.date);
-      console.log(params.date);
     },
     [setOpenStartDate, setStartDate]
   );
@@ -72,7 +79,6 @@ const CreateUpdatePeriod = ({ navigation, route }) => {
     (params) => {
       setOpenEndDate(false);
       setEndDate(params.date);
-      console.log(params.date);
     },
     [setOpenEndDate, setEndDate]
   );
@@ -89,7 +95,6 @@ const CreateUpdatePeriod = ({ navigation, route }) => {
   const handleFocus = () => {
     setValue(originalValue);
   };
-
   const handleChange = (text) => {
     let onlyNumAndDot = text.replace(/[^0-9.]/g, "");
     if (onlyNumAndDot.split(".").length > 2) {
@@ -109,32 +114,33 @@ const CreateUpdatePeriod = ({ navigation, route }) => {
     };
     if (isCreate) {
       objPeriod["used"] = 0;
-      Periods.createPeriod(objPeriod, mainVariables).then((res) => {
+      objPeriod["index"] = Utilities.getTimeStamp();
+      createUpdatePeriodUtils.handleCreatePeriods(objPeriod);
+
+      /*Periods.createUpdatePeriod(objPeriod).then((res) => {        
         if (res) {
-          Periods.getPeriodList((periodsList) => {
-            let datReverse = periodsList.reverse();
-            let test = { ...mainVariables.PERIODS };
-            test = datReverse;
-            mainVariables.PERIODS = test;
-          });
-          console.log("agregado");
+          createUpdatePeriodUtils.handleCreatePeriods(objPeriod);
+          console.log("Agregado");
         } else console.log("No Agregado");
-      });
+      });*/
     } else {
       objPeriod["used"] = period.used;
       objPeriod["index"] = period.index;
-      Periods.updatePeriod(objPeriod, mainVariables).then((res) => {
-        if (res) console.log("agregado");
-        else console.log("No Agregado");
-      });
+      console.log(objPeriod);
+      createUpdatePeriodUtils.handleUpdatePeriods(objPeriod);
+
+      /*Periods.createUpdatePeriod(objPeriod).then((res) => {
+        if (res) {
+          createUpdatePeriodUtils.handleUpdatePeriods(objPeriod);
+          console.log("Editado");
+        } else console.log("No editado");
+      });*/
     }
   };
   const handleDeletePeriod = () => {
-    Periods.removePeriod(period.index, mainVariables).then((res) => {
+    Periods.removePeriod(period.index).then((res) => {
       if (res) {
-        console.log("se elimino");
-        setIsEdit(false);
-        initVariables();
+        createUpdatePeriodUtils.handleRemovePeriods(period);
       }
     });
   };
@@ -174,7 +180,7 @@ const CreateUpdatePeriod = ({ navigation, route }) => {
               icon={() => (
                 <Ionicons
                   name="wallet"
-                  size={mainVariables.ICONZISE}
+                  size={Config.ICON_SIZE}
                   style={{
                     color: theme.colors.shadow,
                   }}

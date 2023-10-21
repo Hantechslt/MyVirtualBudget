@@ -1,6 +1,6 @@
 import { ref, get, update } from "@react-native-firebase/database";
 
-import Firebase from "@Config/Firebase";
+import Firebase from "@FirebaseDB/Firebase";
 
 class MyBudgetApp {
   getMyAppInfo = () => {

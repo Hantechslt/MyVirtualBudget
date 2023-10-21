@@ -14,8 +14,7 @@ const SelectModal = (props) => {
   //const [visible, setVisible] = useState(false);
   const [items, setItems] = useState([]);
 
-  const handleSelect = (item) => {
-    console.log(item);
+  const handleSelect = (item) => {    
     props.setValue(item);
     props.close(false);
   };

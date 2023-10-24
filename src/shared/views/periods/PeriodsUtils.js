@@ -1,6 +1,6 @@
 import Utilities from "@Utilities/Utilities";
 
-class CreateUpdatePeriodUtils {
+class PeriodsUtils {
   constructor(PERIODS, updatePeriods) {
     this.PERIODS = PERIODS;
     this.updatePeriods = updatePeriods;
@@ -10,7 +10,18 @@ class CreateUpdatePeriodUtils {
    * @param {*} objPeriod
    */
   handleCreatePeriods(objPeriod) {
-    const updatedPeriods = [...this.PERIODS, objPeriod];
+    const label = Utilities.getFormatPeriodDate(
+      objPeriod.startDate,
+      objPeriod.endDate
+    );
+    const desc = Utilities.getLocaleCurrency(objPeriod.amount, "es-CR", "CRC");
+    let objPeriodStorage = {
+      ...objPeriod,
+      label: label,
+      description: desc,
+    };
+
+    const updatedPeriods = [...this.PERIODS, objPeriodStorage];
     const sortedPeriods = Utilities.sortByIndex(updatedPeriods, "index");
     this.updatePeriods(sortedPeriods);
   }
@@ -39,8 +50,23 @@ class CreateUpdatePeriodUtils {
       "index",
       objPeriod.index
     );
-    this.updatePeriods(this.PERIODS);
+
+    this.updatePeriods(...this.PERIODS);
+  }
+  handleAddLabelDesc(periods) {
+    periods.forEach((period) => {
+      period["label"] = Utilities.getFormatPeriodDate(
+        period.startDate,
+        period.endDate
+      );
+      period["description"] = Utilities.getLocaleCurrency(
+        period.amount,
+        "es-CR",
+        "CRC"
+      );
+    });
+    return periods;
   }
 }
 
-export default CreateUpdatePeriodUtils;
+export default PeriodsUtils;

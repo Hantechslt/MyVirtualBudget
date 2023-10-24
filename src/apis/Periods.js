@@ -16,13 +16,14 @@ import Config from "@Config/Config";
 
 class Budgets {
   getPeriodList = () => {
+
     const data = [];
     const refBD = FirebaseRefStructure.getPeriodsStructure(
       auth().currentUser.uid,
       Config.ENVIRONMENT
     );
     const dbRef = ref(firebaseSingleton.db, refBD);
-    const sortedQuery = query(dbRef, orderByChild("index"));
+    const sortedQuery = query(dbRef, orderByChild("index"));    
     return get(sortedQuery)
       .then((snapshot) => {
         if (snapshot.exists()) {
@@ -45,7 +46,7 @@ class Budgets {
    * @returns
    */
   createUpdatePeriod = (objPeriod) => {
-    const refBD = FirebaseRefStructure.CRDperiodStructure(
+    const refBD = FirebaseRefStructure.CUDPeriodsStructure(
       auth().currentUser.uid,
       objPeriod.index,
       Config.ENVIRONMENT
@@ -68,7 +69,7 @@ class Budgets {
    * @returns
    */
   removePeriod = (index) => {
-    const refBD = FirebaseRefStructure.CRDperiodStructure(
+    const refBD = FirebaseRefStructure.CUDPeriodsStructure(
       auth().currentUser.uid,
       index,
       Config.ENVIRONMENT

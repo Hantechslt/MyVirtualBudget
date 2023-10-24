@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { View, ScrollView } from "react-native";
+import { View, ScrollView, StyleSheet } from "react-native";
 import {
   Button,
   Modal,
@@ -9,12 +9,12 @@ import {
   useTheme,
 } from "react-native-paper";
 import MainStyleSheet from "@Styles/MainStyleSheet";
+
 const SelectModal = (props) => {
   const theme = useTheme();
-  //const [visible, setVisible] = useState(false);
   const [items, setItems] = useState([]);
 
-  const handleSelect = (item) => {    
+  const handleSelect = (item) => {
     props.setValue(item);
     props.close(false);
   };
@@ -30,15 +30,21 @@ const SelectModal = (props) => {
         onDismiss={() => {
           props.close(false);
         }}
+        contentContainerStyle={{
+          ...styles.modalContent,
+          backgroundColor: theme.colors.background,
+          borderRadius: 10,
+        }}
       >
-        <ScrollView>
-          <View
-            style={{
-              ...MainStyleSheet.modalContent,
-              backgroundColor: theme.colors.background,
-            }}
-          >
-            <Text style={{ color: theme.colors.primary }}>{props.title} </Text>
+        <View
+          style={{
+            ...MainStyleSheet.modalContent,
+            backgroundColor: theme.colors.background,
+            borderRadius: 10,
+          }}
+        >
+          <Text style={{ color: theme.colors.primary }}>{props.title}</Text>
+          <ScrollView>
             <List.Section>
               {items.map((item, index) => (
                 <List.Item
@@ -49,11 +55,18 @@ const SelectModal = (props) => {
                 />
               ))}
             </List.Section>
-          </View>
-        </ScrollView>
+          </ScrollView>
+        </View>
       </Modal>
     </Portal>
   );
 };
+
+const styles = StyleSheet.create({
+  modalContent: {
+    marginVertical: "30%",
+    marginHorizontal: "5%",
+  },
+});
 
 export default SelectModal;

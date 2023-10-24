@@ -2,7 +2,7 @@ class FirebaseRefStructure {
   FirebaseRefStructure() {}
 
   //#region PERIOD
-  CRDperiodStructure(uid, index, ENV) {
+  CUDPeriodsStructure(uid, index, ENV) {
     if (ENV == "DEV") return `UsersDEV/${uid}/Periods/${index}/`;
     else return `Users/${uid}/Periods/${index}/`;
   }
@@ -14,13 +14,13 @@ class FirebaseRefStructure {
 
   //#region BUDGET
 
-  CRDbudgetStructure(uid, periodKey, index, ENV) {
+  CUDBudgetsStructure(uid, periodKey, index, ENV) {
     if (ENV == "DEV")
       return `UsersDEV/${uid}/Periods/${periodKey}/BudgetByPeriod/${index}/`;
     else return `Users/${uid}/Periods/${periodKey}/BudgetByPeriod/${index}/`;
   }
 
-  getbudgetStructure(uid, periodKey, index, ENV) {
+  getBudgetsStructure(uid, periodKey, index, ENV) {
     if (ENV == "DEV")
       return `UsersDEV/${uid}/Periods/${periodKey}/BudgetByPeriod/`;
     else return `Users/${uid}/Periods/${periodKey}/BudgetByPeriod/`;
@@ -28,18 +28,18 @@ class FirebaseRefStructure {
   //#endregion
   //#region Spending
 
-  CUDSpendingStructure(uid, periodKey, budgetKey, index, ENV) {
+  CUDExpensesStructure(uid, periodKey, budgetKey, index, ENV) {
     if (ENV == "DEV")
-      return `UsersDEV/${uid}/Periods/${periodKey}/BudgetByPeriod/${budgetKey}/SpendingByBudget/${index}/`;
+      return `UsersDEV/${uid}/Periods/${periodKey}/BudgetByPeriod/${budgetKey}/ExpensesByBudget/${index}/`;
     else
-      return `Users/${uid}/Periods/${periodKey}/BudgetByPeriod/${budgetKey}/SpendingByBudget/${index}/`;
+      return `Users/${uid}/Periods/${periodKey}/BudgetByPeriod/${budgetKey}/ExpensesByBudget/${index}/`;
   }
 
-  getSpendingStructure(uid, periodKey, budgetKey, ENV) {
+  getExpensesStructure(uid, periodKey, budgetKey, ENV) {
     if (ENV == "DEV")
-      return `UsersDEV/${uid}/Periods/${periodKey}/BudgetByPeriod/${budgetKey}/SpendingByBudget`;
+      return `UsersDEV/${uid}/Periods/${periodKey}/BudgetByPeriod/${budgetKey}/ExpensesByBudget`;
     else
-      return `Users/${uid}/Periods/${periodKey}/BudgetByPeriod/${budgetKey}/SpendingByBudget`;
+      return `Users/${uid}/Periods/${periodKey}/BudgetByPeriod/${budgetKey}/ExpensesByBudget`;
   }
   //#endregion
 }

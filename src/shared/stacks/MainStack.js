@@ -1,17 +1,12 @@
 //React
 import React, { useState, useEffect } from "react";
 import { createStackNavigator } from "@react-navigation/stack";
-import DrawerNav from "@Nav/Drawer";
 import { useTheme } from "react-native-paper";
 import auth from "@react-native-firebase/auth";
 
-//views
-import VerifyPhone from "@PhoneAuth/VerifyPhone";
-import VerifyOtp from "@PhoneAuth/VerifyOtp";
-import CreateUpdatePeriod from "@BudgetByPeriod/CreateUpdatePeriod";
-
 import UserStack from "@Stacks/UserStack";
 import AuthStack from "@Stacks/AuthStack";
+
 const Stack = createStackNavigator();
 
 /**

@@ -10,17 +10,17 @@ import {
 
 import firebaseSingleton from "@FirebaseDB/Firebase";
 import auth from "@react-native-firebase/auth";
-import Utilities from "@Utilities/Utilities";
 import FirebaseRefStructure from "@FirebaseDB/FirebaseRefStructure";
 import Config from "@Config/Config";
-class SpendingByBudget {
-  getSpendingList = (objBudget) => {
+
+class ExpensesByBudget {
+  getExpensesList = (objBudget) => {
     const data = [];
-    const refBD = FirebaseRefStructure.getSpendingStructure(
+    const refBD = FirebaseRefStructure.getExpensesStructure(
       auth().currentUser.uid,
       objBudget.periodKey,
       objBudget.index,
-      config.ENVIRONMENT
+      Config.ENVIRONMENT
     );
     const dbRef = ref(firebaseSingleton.db, refBD);
     const sortedQuery = query(dbRef, orderByChild("index"));
@@ -41,48 +41,45 @@ class SpendingByBudget {
   };
   /**
    * Crear un nuevo periodo
-   * @param {*} objSpending
+   * @param {*} objExpense
    * @returns
    */
-  createSpending = (objBudget, objSpending) => {
-    const index = Utilities.getTimeStamp();
-    objSpending["index"] = index;
-    const refBD = FirebaseRefStructure.CUDSpendingStructure(
-      auth().currentUser.uid,
+  createUpdateExpense = (objPeriod, objBudget, objExpense) => {
+    const uid = auth().currentUser.uid;
+    const refPeriod = FirebaseRefStructure.CUDPeriodsStructure(
+      uid,
+      objPeriod.index,
+      Config.ENVIRONMENT
+    );
+    const refBudget = FirebaseRefStructure.CUDBudgetsStructure(
+      uid,
       objBudget.periodKey,
       objBudget.index,
-      index,
-      config.ENVIRONMENT
+      Config.ENVIRONMENT
     );
-    const dbRef = ref(firebaseSingleton.db, refBD);
-    return update(dbRef, objSpending).then(() => {
+    const refExpense = FirebaseRefStructure.CUDExpensesStructure(
+      uid,
+      objPeriod.index,
+      objBudget.index,
+      objExpense.index,
+      Config.ENVIRONMENT
+    );
+
+    const dbRefPeriod = ref(firebaseSingleton.db, refPeriod);
+    const dbRefBudget = ref(firebaseSingleton.db, refBudget);
+    const dbRefExpense = ref(firebaseSingleton.db, refExpense);
+
+    /*return update(dbRef, objExpense).then(() => {
+      return true;
+    });*/
+
+    return Promise.all([
+      update(dbRefPeriod, objPeriod),
+      update(dbRefBudget, objBudget),
+      update(dbRefExpense, objExpense),
+    ]).then(() => {
       return true;
     });
-  };
-
-  /**
-   * Actualizar un periodo
-   * @param {*} objBudgetByPeriod
-   * @returns
-   */
-  updateSpending = (objBudget, objSpending) => {
-    const refBD = FirebaseRefStructure.CUDSpendingStructure(
-      auth().currentUser.uid,
-      objBudget.periodKey,
-      objBudget.index,
-      objSpending.index,
-      config.ENVIRONMENT
-    );
-    const dbRef = ref(firebaseSingleton.db, refBD);
-
-    return update(dbRef, objSpending)
-      .then(() => {
-        return true;
-      })
-      .catch((error) => {
-        console.error(error);
-        return false;
-      });
   };
 
   /**
@@ -91,13 +88,13 @@ class SpendingByBudget {
    * @param {*} context
    * @returns
    */
-  removeSpending = (objBudget, objSpending) => {
-    const refBD = FirebaseRefStructure.CUDSpendingStructure(
+  removeExpense = (objBudget, objExpense) => {
+    const refBD = FirebaseRefStructure.CUDExpensesStructure(
       auth().currentUser.uid,
       objBudget.periodKey,
       objBudget.index,
-      objSpending.index,
-      config.ENVIRONMENT
+      objExpense.index,
+      Config.ENVIRONMENT
     );
     const dbRef = ref(firebaseSingleton.db, refBD);
     return remove(dbRef)
@@ -110,4 +107,4 @@ class SpendingByBudget {
       });
   };
 }
-export default new SpendingByBudget();
+export default new ExpensesByBudget();

@@ -1,52 +1,11 @@
 import React, { useEffect } from "react";
-import { View, Text } from "react-native";
 import { useTheme } from "react-native-paper";
-import Budgets from "@Budgets/BudgetByPeriod";
+import PeriodsHome from "@Periods/Periods";
 import { createDrawerNavigator } from "@react-navigation/drawer";
 const Drawer = createDrawerNavigator();
 
 function DrawerNav() {
   const theme = useTheme();
-
-  // Componente Feed
-  function Feed() {
-    useEffect(() => {
-      //console.log(Utilities.getTimeStamp());
-      //console.log(auth().currentUser.uid);
-      /*MyBudgetApp.getMyAppInfo().then((res) => {
-        console.log(res);
-      });*/
-    }, []);
-
-    return (
-      <View
-        style={{
-          flex: 1,
-          justifyContent: "center",
-          alignItems: "center",
-          backgroundColor: theme.colors.background,
-        }}
-      >
-        <Text>Feed Screen</Text>
-      </View>
-    );
-  }
-
-  // Componente Article
-  function Article({ navigation }) {
-    return (
-      <View
-        style={{
-          flex: 1,
-          justifyContent: "center",
-          alignItems: "center",
-          backgroundColor: theme.colors.background,
-        }}
-      >
-        <Text>Article Screen</Text>
-      </View>
-    );
-  }
 
   return (
     <Drawer.Navigator
@@ -59,7 +18,7 @@ function DrawerNav() {
     >
       <Drawer.Screen
         name="Mis Finanzas"
-        component={Budgets}
+        component={PeriodsHome}
         options={{
           headerStyle: {
             backgroundColor: theme.colors.background,
@@ -68,7 +27,6 @@ function DrawerNav() {
           headerLeftContainerStyle: {
             backgroundColor: theme.colors.background,
           },
-          drawerLabel: "Hola",
         }}
       />
     </Drawer.Navigator>

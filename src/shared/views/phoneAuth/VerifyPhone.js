@@ -10,10 +10,9 @@ import {
 import SelectModal from "@Components/SelectModal";
 import CountryCode from "@Config/CountryCode";
 import MainStyleSheet from "@Styles/MainStyleSheet";
-import { MainContext } from "@Contexts/MainContext";
+import Config from "@Config/Config";
 
 const VerifyPhone = ({ navigation }) => {
-  const mainVariables = useContext(MainContext);
   const theme = useTheme();
   const [areaCode, setAreaCode] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
@@ -21,7 +20,7 @@ const VerifyPhone = ({ navigation }) => {
   const phoneNumberRef = useRef();
 
   useEffect(() => {
-    if (mainVariables.ENVIRONMENT == "DEV") {
+    if (Config.ENVIRONMENT == "DEV") {
       setAreaCode("+506");
       setPhoneNumber("88888888");
     }

@@ -3,9 +3,10 @@ import React from "react";
 import { createStackNavigator } from "@react-navigation/stack";
 import DrawerNav from "@Nav/Drawer";
 import { useTheme } from "react-native-paper";
-import CreateUpdatePeriod from "@BudgetByPeriod/CreateUpdatePeriod";
-import CreateUpdateBudget from "@Budgets/CreateUpdateBudget";
-import CreateUpdateSpending from "@SpendingByBudget/CreateUpdateSpending";
+import CreateUpdatePeriod from "@Periods/CreateUpdatePeriod";
+import CreateUpdateBudget from "@BudgetsByPeriod/CreateUpdateBudget";
+import CreateUpdateExpense from "@ExpensesByBudget/CreateUpdateExpense";
+
 const Stack = createStackNavigator();
 
 const UserStack = () => {
@@ -38,8 +39,8 @@ const UserStack = () => {
         }}
       />
       <Stack.Screen
-        name="CreateUpdateSpending"
-        component={CreateUpdateSpending}
+        name="CreateUpdateExpense"
+        component={CreateUpdateExpense}
         options={{
           cardStyle: { backgroundColor: theme.colors.background },
           headerShown: false,

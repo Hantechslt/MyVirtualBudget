@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from "react";
-import { View, ScrollView } from "react-native";
+import { View, ScrollView, Animated } from "react-native";
 import {
   useTheme,
   TextInput,
@@ -13,28 +13,51 @@ import MainStyleSheet from "@Styles/MainStyleSheet";
 import Utilities from "@Utilities/Utilities";
 import { MainContext } from "@Contexts/MainContext";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
-import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
-
-import SpendingByBudget from "@Apis/SpendingByBudget";
-
-const CreateUpdateSpending = ({ navigation, route }) => {
+import BudgetsByPeriod from "@Apis/BudgetsByPeriod";
+import BudgetByPeriodUtils from "@BudgetsByPeriod/BudgetsByPeriodUtils";
+import Config from "@Config/Config";
+import LoadScreen from "@Components/LoadScreen";
+import SnackbarMsg from "@Components/SnackbarMsg";
+const CreateUpdateBudget = ({ navigation, route }) => {
   const theme = useTheme();
-  const mainVariables = useContext(MainContext);
   const [isEdit, setIsEdit] = useState(false);
 
+  const [period] = useState(route.params?.period);
   const [budget] = useState(route.params?.budget);
-  const [spending] = useState(route.params?.spending);
+
+  const [formatDate, setFormatDate] = useState("");
 
   const [originalValue, setOriginalValue] = useState("");
   const [value, setValue] = useState("");
-  const [spendingName, setSpendingName] = useState("");
+  const [budgetName, setBudgetName] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  //snackbar
+  const [snackbarVisible, setSnackbarVisible] = useState(false);
+  const [snackbarType, setSnackbarType] = useState("SUCCESS");
+
+  const { updateSelectedPeriod, BUDGETS_BY_PERIOD, updateBudgetsByPeriod } =
+    useContext(MainContext);
+
+  const budgetByPeriodUtils = new BudgetByPeriodUtils(
+    BUDGETS_BY_PERIOD,
+    updateBudgetsByPeriod
+  );
 
   useEffect(() => {
-    if (spending !== null) {
-      console.log(spending);
+    if (budget !== null) {
       setIsEdit(true);
     }
+    setFormatDate(
+      Utilities.getFormatPeriodDate(period.startDate, period.endDate)
+    );
   }, []);
+
+  const initVariables = () => {
+    setBudgetName("");
+    setValue("");
+    setOriginalValue("");
+  };
 
   const handleBlur = () => {
     const numberFormat = new Intl.NumberFormat("es-CR", {
@@ -59,50 +82,65 @@ const CreateUpdateSpending = ({ navigation, route }) => {
     setOriginalValue(onlyTwoDecimals);
   };
 
-  const handleCreateUpdateSpending = (isCreate) => {
+  const handleCreateUpdateBudget = (isCreate) => {
     objBudget = {
-      periodKey: budget.periodKey,
-      index: budget.index,
-    };
-    objSpending = {
-      spendingName: spendingName,
       amount: parseFloat(originalValue),
-      budgetKey: budget.index,
+      periodKey: period.index,
       state: true,
+      budgetName: budgetName,
+      isShared: false,
     };
     if (isCreate) {
-      SpendingByBudget.createSpending(
-        objBudget,
-        objSpending,
-        mainVariables
-      ).then((res) => {
-        if (res) console.log("Agregado");
+      objBudget["used"] = 0;
+      objBudget["index"] = Utilities.getTimeStamp();
+      setLoading(true);
+      BudgetsByPeriod.createUpdateBudget(objBudget).then((res) => {
+        if (res) {
+          updateSelectedPeriod(period);
+
+          budgetByPeriodUtils.handleCreateBudget(objBudget);
+          setSnackbarType("SUCCESS");
+          setSnackbarVisible(true);
+          initVariables();
+        } else {
+          setSnackbarType("ERROR");
+          setSnackbarVisible(true);
+        }
+        setLoading(false);
       });
     } else {
-      objBudgetByPeriod["index"] = budgetByPeriod.index;
-      SpendingByBudget.updateSpending(
-        objBudget,
-        objSpending,
-        mainVariables
-      ).then((res) => {
-        if (res) console.log("Editado");
+      objBudget["used"] = budgetByPeriod.used;
+      objBudget["index"] = budgetByPeriod.index;
+      setLoading(true);
+      BudgetsByPeriod.createUpdateBudget(objBudget).then((res) => {
+        if (res) {
+          updateSelectedPeriod(period);
+          budgetByPeriodUtils.handleUpdateBudget(objBudget);
+          setSnackbarType("SUCCESS");
+          setSnackbarVisible(true);
+        } else {
+          setSnackbarType("ERROR");
+          setSnackbarVisible(true);
+        }
+        setLoading(false);
       });
     }
   };
-  const handleDeleteSpending = () => {
-    objBudgetByPeriod = {
-      index: budgetByPeriod.index,
-      periodKey: period.index,
-    };
-    SpendingByBudget.removeSpending(objBudgetByPeriod, mainVariables).then(
-      (res) => {
-        if (res) {
-          console.log("se elimino");
-          setIsEdit(false);
-          initVariables();
-        }
+  const handleDeleteBudget = () => {
+    setLoading(true);
+    BudgetsByPeriod.removeBudget(objBudget).then((res) => {
+      if (res) {
+        budgetByPeriodUtils.handleRemoveBudget(objBudget);
+        setSnackbarType("SUCCESS");
+        setSnackbarVisible(true);
+        setIsEdit(false);
+        initVariables();
+      } else {
+        setSnackbarType("ERROR");
+        setSnackbarVisible(true);
       }
-    );
+      setLoading(false);
+    });
   };
   return (
     <View
@@ -111,13 +149,14 @@ const CreateUpdateSpending = ({ navigation, route }) => {
         backgroundColor: theme.colors.background,
       }}
     >
-      <ScrollView>
-        <View
-          style={{
-            ...MainStyleSheet.frontView,
-            backgroundColor: theme.colors.background,
-          }}
-        >
+      <View
+        style={{
+          ...MainStyleSheet.frontView,
+          backgroundColor: theme.colors.background,
+        }}
+      >
+        <ScrollView>
+          <LoadScreen loading={loading} />
           <IconButton
             icon={() => (
               <MaterialCommunityIcons
@@ -139,9 +178,9 @@ const CreateUpdateSpending = ({ navigation, route }) => {
           >
             <Avatar.Icon
               icon={() => (
-                <FontAwesome5
-                  name="money-check-alt"
-                  size={mainVariables.ICONZISE}
+                <MaterialCommunityIcons
+                  name="folder-table"
+                  size={Config.ICON_SIZE}
                   style={{
                     color: theme.colors.shadow,
                   }}
@@ -152,13 +191,13 @@ const CreateUpdateSpending = ({ navigation, route }) => {
               style={{ color: theme.colors.onBackground }}
               variant="headlineMedium"
             >
-              Gasto
+              Presupuesto
             </Text>
             <Text
               style={{ color: theme.colors.onBackground }}
               variant="bodySmall"
             >
-              Se definen para identificar un egreso de dinero de un presupuesto
+              Se definen para agrupar los gastos de un tipo de presupuesto
               definido
             </Text>
           </View>
@@ -169,25 +208,25 @@ const CreateUpdateSpending = ({ navigation, route }) => {
           />
           <View style={{ ...MainStyleSheet.viewRow }}>
             <TextInput
-              label="Presuesto"
+              label="Periodo"
               style={{ width: "85%" }}
               mode="outlined"
-              value={budget.budgetName}
+              value={formatDate}
               editable={false}
             />
           </View>
           <View style={{ ...MainStyleSheet.viewRow, marginVertical: "2%" }}>
             <TextInput
-              label="Nombre del gasto"
+              label="Nombre del presupuesto"
               style={{ width: "85%" }}
               mode="outlined"
-              value={spendingName}
-              onChangeText={(text) => setSpendingName(text)}
+              value={budgetName}
+              onChangeText={(text) => setBudgetName(text)}
             />
           </View>
           <View style={{ ...MainStyleSheet.viewRow }}>
             <TextInput
-              label="Monto del gasto"
+              label="Monto del presupuesto"
               style={{ width: "85%" }}
               mode="outlined"
               keyboardType="numeric"
@@ -201,7 +240,7 @@ const CreateUpdateSpending = ({ navigation, route }) => {
                 icon={() => (
                   <MaterialCommunityIcons
                     name="delete"
-                    onPress={() => handleDeleteSpending()}
+                    onPress={() => handleDeleteBudget()}
                     size={30}
                     style={{
                       color: theme.colors.darkRed,
@@ -217,26 +256,33 @@ const CreateUpdateSpending = ({ navigation, route }) => {
               mode="contained-tonal"
               style={MainStyleSheet.primaryButton}
               onPress={() => {
-                handleCreateUpdateSpending(false);
+                handleCreateUpdateBudget(false);
               }}
             >
-              Editar gasto
+              Editar presupuesto
             </Button>
           ) : (
             <Button
               mode="contained-tonal"
               style={MainStyleSheet.primaryButton}
               onPress={() => {
-                handleCreateUpdateSpending(true);
+                handleCreateUpdateBudget(true);
               }}
             >
-              Agregar gasto
+              Agregar presupuesto
             </Button>
           )}
-        </View>
-      </ScrollView>
+        </ScrollView>
+        {snackbarVisible ? (
+          <SnackbarMsg
+            open={snackbarVisible}
+            close={setSnackbarVisible.bind(null)}
+            type={snackbarType}
+          />
+        ) : null}
+      </View>
     </View>
   );
 };
 
-export default CreateUpdateSpending;
+export default CreateUpdateBudget;

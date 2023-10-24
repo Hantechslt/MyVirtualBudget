@@ -10,13 +10,11 @@
       "@Apis/*":["./src/apis/*"],
       "@Config/*":["./src/config/*"],
       "@FirebaseDB/*":["./src/firebase/*"],
-
-      //Views
       "@Stacks/*":["./src/shared/stacks/*"],
-      "@Budgets/*":["./src/shared/views/budget/*"],
+      "@Periods/*":["src/shared/views/periods/*"],
       "@PhoneAuth/*":["./src/shared/views/phoneAuth/*"],
-      "@BudgetByPeriod/*":["./src/shared/views/budgetByPeriod/*"],
-      "@SpendingByBudget/*":["./src/shared/views/spending/*"],
+      "@BudgetsByPeriod/*":["src/shared/views/budgetsByPeriod/*"],
+      "@ExpensesByBudget/*":["src/shared/views/expensesByBudget/*"],
 
     }
   }

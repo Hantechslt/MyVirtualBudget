@@ -3,20 +3,20 @@ import {
   get,
   update,
   query,
-  limitToLast,
   remove,
   orderByChild,
 } from "@react-native-firebase/database";
 
 import firebaseSingleton from "@FirebaseDB/Firebase";
 import auth from "@react-native-firebase/auth";
-import Utilities from "@Utilities/Utilities";
 import FirebaseRefStructure from "@FirebaseDB/FirebaseRefStructure";
 import Config from "@Config/Config";
+
+
 class BudgetsByPeriod {
   getBudgetList = (periodKey) => {
     const data = [];
-    const refBD = FirebaseRefStructure.getPeriodsStructure(
+    const refBD = FirebaseRefStructure.getBudgetsStructure(
       auth().currentUser.uid,
       periodKey,
       Config.ENVIRONMENT
@@ -40,7 +40,7 @@ class BudgetsByPeriod {
   };
 
   createUpdateBudget = (objBudgetByPeriod) => {
-    const refBD = FirebaseRefStructure.CRDbudgetStructure(
+    const refBD = FirebaseRefStructure.CUDBudgetsStructure(
       auth().currentUser.uid,
       objBudgetByPeriod.periodKey,
       objBudgetByPeriod.index,
@@ -53,7 +53,7 @@ class BudgetsByPeriod {
   };
 
   removeBudget = (objBudgetByPeriod) => {
-    const refBD = FirebaseRefStructure.CRDbudgetStructure(
+    const refBD = FirebaseRefStructure.CUDBudgetsStructure(
       auth().currentUser.uid,
       objBudgetByPeriod.periodKey,
       objBudgetByPeriod.index,

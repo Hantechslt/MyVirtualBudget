@@ -4,7 +4,7 @@ import React, { createContext, useReducer } from "react";
 const mainVariables = {
   PERIODS: null,
   BUDGETS_BY_PERIOD: null,
-  SPENDING_BY_BUDGET: null,
+  EXPENSES_BY_BUDGET: null,
   SELECTED_PERIOD: null,
 };
 
@@ -12,7 +12,7 @@ const mainVariables = {
 const ActionTypes = {
   UPDATE_PERIODS: "UPDATE_PERIODS",
   UPDATE_BUDGETS_BY_PERIOD: "UPDATE_BUDGETS_BY_PERIOD",
-  UPDATE_SPENDING_BY_BUDGET: "UPDATE_SPENDING_BY_BUDGET",
+  UPDATE_EXPENSES_BY_BUDGET: "UPDATE_EXPENSES_BY_BUDGET",
   UPDATE_SELECTED_PERIOD: "UPDATE_SELECTED_PERIOD",
 };
 
@@ -22,8 +22,8 @@ const mainReducer = (state, action) => {
       return { ...state, PERIODS: action.payload };
     case ActionTypes.UPDATE_BUDGETS_BY_PERIOD:
       return { ...state, BUDGETS_BY_PERIOD: action.payload };
-    case ActionTypes.UPDATE_SPENDING_BY_BUDGET:
-      return { ...state, SPENDING_BY_BUDGET: action.payload };
+    case ActionTypes.UPDATE_EXPENSES_BY_BUDGET:
+      return { ...state, EXPENSES_BY_BUDGET: action.payload };
     case ActionTypes.UPDATE_SELECTED_PERIOD:
       return { ...state, SELECTED_PERIOD: action.payload };
     default:
@@ -46,10 +46,10 @@ const MainProvider = ({ children }) => {
       payload: newBudgetsByPeriod,
     });
   };
-  const updateSpendingByBudget = (newSpendingByBudget) => {
+  const updateExpensesByBudget = (newExpensesByBudget) => {
     dispatch({
-      type: ActionTypes.UPDATE_SPENDING_BY_BUDGET,
-      payload: newSpendingByBudget,
+      type: ActionTypes.UPDATE_EXPENSES_BY_BUDGET,
+      payload: newExpensesByBudget,
     });
   };
   const updateSelectedPeriod = (newSelectedPeriod) => {
@@ -64,7 +64,7 @@ const MainProvider = ({ children }) => {
         ...state,
         updatePeriods,
         updateBudgetsByPeriod,
-        updateSpendingByBudget,
+        updateExpensesByBudget,
         updateSelectedPeriod,
       }}
     >

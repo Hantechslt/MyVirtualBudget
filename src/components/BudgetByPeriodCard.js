@@ -20,9 +20,7 @@ import Config from "@Config/Config";
 const BudgetByPeriodCard = (props) => {
   const theme = useTheme();
   const navigation = useNavigation();
-  useEffect(() => {
-    console.log(props);
-  }, []);
+  useEffect(() => {}, []);
 
   return (
     <Card
@@ -106,6 +104,7 @@ const BudgetByPeriodCard = (props) => {
           style={{
             ...MainStyleSheet.viewRow,
             justifyContent: "space-around",
+            marginBottom: "-3%",
           }}
         >
           <IconButton
@@ -131,9 +130,9 @@ const BudgetByPeriodCard = (props) => {
               />
             )}
             onPress={() =>
-              navigation.navigate("CreateUpdateSpending", {
+              navigation.navigate("CreateUpdateExpense", {
                 budget: props.budget,
-                spending: null,
+                expense: null,
               })
             }
           />

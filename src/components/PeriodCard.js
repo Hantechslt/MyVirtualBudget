@@ -15,17 +15,14 @@ import { MainContext } from "@Contexts/MainContext";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import Utilities from "@Utilities/Utilities";
-import SelectModal from "@Components/SelectModal";
 import Config from "@Config/Config";
 
 const PeriodCard = (props) => {
   const theme = useTheme();
   const navigation = useNavigation();
 
-  const [openSelectModal, setOpenSelectModal] = useState(false);
   const [formatDate, setFormatDate] = useState("");
-  const { PERIODS, SELECTED_PERIOD, updateSelectedPeriod } =
-    useContext(MainContext);
+  const { SELECTED_PERIOD } = useContext(MainContext);
 
   useEffect(() => {
     setFormatDate(
@@ -34,26 +31,7 @@ const PeriodCard = (props) => {
         SELECTED_PERIOD.endDate
       )
     );
-  }, [PERIODS]);
-
-  const handleOpenSelectModal = () => {
-    PERIODS.forEach((period) => {
-      period["label"] =
-        "Periodo: " +
-        Utilities.getFormatPeriodDate(period.startDate, period.endDate);
-      period["description"] = Utilities.getLocaleCurrency(
-        period.amount,
-        "es-CR",
-        "CRC"
-      );
-    });
-    setOpenSelectModal(true);
-  };
-
-  const handleSelectedItem = (period) => {
-    props.handleChangePeriod(period);
-    updateSelectedPeriod(period);
-  };
+  }, [SELECTED_PERIOD]);
 
   return (
     <Card
@@ -101,22 +79,13 @@ const PeriodCard = (props) => {
               />
             )}
             onPress={() => {
-              handleOpenSelectModal(true);
+              props.handleOpenSelect(true);
             }}
           />
         )}
       />
       <Divider style={{ marginHorizontal: "5%" }} />
       <Card.Content>
-        {PERIODS !== null ? (
-          <SelectModal
-            open={openSelectModal}
-            close={setOpenSelectModal.bind(null)}
-            items={PERIODS}
-            setValue={handleSelectedItem.bind(null)}
-            title={"Seleccione un Periodo"}
-          ></SelectModal>
-        ) : null}
         <View style={MainStyleSheet.viewRow}>
           <View>
             <Text
@@ -159,6 +128,7 @@ const PeriodCard = (props) => {
           style={{
             ...MainStyleSheet.viewRow,
             justifyContent: "space-around",
+            marginBottom: "-3%",
           }}
         >
           <IconButton

@@ -10,7 +10,12 @@ import {
   Divider,
 } from "react-native-paper";
 import MainStyleSheet from "@Styles/MainStyleSheet";
-import { DatePickerModal, en } from "react-native-paper-dates";
+import {
+  DatePickerModal,
+  es,
+  registerTranslation,
+} from "react-native-paper-dates";
+
 import Utilities from "@Utilities/Utilities";
 import { MainContext } from "@Contexts/MainContext";
 import Config from "@Config/Config";
@@ -19,7 +24,10 @@ import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityI
 import moment from "moment";
 import Periods from "@Apis/Periods";
 
-import CreateUpdatePeriodUtils from "./CreateUpdatePeriodUtils";
+import PeriodsUtils from "@Periods/PeriodsUtils";
+
+import SnackbarMsg from "@Components/SnackbarMsg";
+import LoadScreen from "@Components/LoadScreen";
 
 const CreateUpdatePeriod = ({ navigation, route }) => {
   const theme = useTheme();
@@ -37,10 +45,15 @@ const CreateUpdatePeriod = ({ navigation, route }) => {
 
   const { PERIODS, updatePeriods } = useContext(MainContext);
 
-  const createUpdatePeriodUtils = new CreateUpdatePeriodUtils(
-    PERIODS,
-    updatePeriods
-  );
+  const [loading, setLoading] = useState(false);
+
+  //snackbar
+  const [snackbarVisible, setSnackbarVisible] = useState(false);
+  const [snackbarType, setSnackbarType] = useState("SUCCESS");
+
+  const periodsUtils = new PeriodsUtils(PERIODS, updatePeriods);
+
+  registerTranslation("es", es);
 
   useEffect(() => {
     if (period !== null) {
@@ -106,41 +119,52 @@ const CreateUpdatePeriod = ({ navigation, route }) => {
   };
 
   const handleCreateUpdatePeriods = (isCreate) => {
-    const objPeriod = {
+    let objPeriod = {
       startDate: Utilities.getDateToTimeStamp(startDate),
       endDate: Utilities.getDateToTimeStamp(endDate),
       amount: parseFloat(originalValue),
       state: true,
     };
+
     if (isCreate) {
       objPeriod["used"] = 0;
       objPeriod["index"] = Utilities.getTimeStamp();
-      createUpdatePeriodUtils.handleCreatePeriods(objPeriod);
+      setLoading(true);
 
-      /*Periods.createUpdatePeriod(objPeriod).then((res) => {        
+      Periods.createUpdatePeriod(objPeriod).then((res) => {
         if (res) {
-          createUpdatePeriodUtils.handleCreatePeriods(objPeriod);
-          console.log("Agregado");
-        } else console.log("No Agregado");
-      });*/
+          setSnackbarType("SUCCESS");
+          setSnackbarVisible(true);
+          periodsUtils.handleCreatePeriods(objPeriod);
+        } else {
+          setSnackbarType("ERROR");
+          setSnackbarVisible(true);
+        }
+        setLoading(false);
+      });
     } else {
       objPeriod["used"] = period.used;
       objPeriod["index"] = period.index;
-      console.log(objPeriod);
-      createUpdatePeriodUtils.handleUpdatePeriods(objPeriod);
+      setLoading(true);
 
-      /*Periods.createUpdatePeriod(objPeriod).then((res) => {
+      Periods.createUpdatePeriod(objPeriod).then((res) => {
         if (res) {
-          createUpdatePeriodUtils.handleUpdatePeriods(objPeriod);
-          console.log("Editado");
-        } else console.log("No editado");
-      });*/
+          setSnackbarType("SUCCESS");
+          setSnackbarVisible(true);
+          periodsUtils.handleUpdatePeriods(objPeriod);
+        } else {
+          setSnackbarType("ERROR");
+          setSnackbarVisible(true);
+        }
+        setLoading(false);
+      });
     }
   };
   const handleDeletePeriod = () => {
     Periods.removePeriod(period.index).then((res) => {
       if (res) {
-        createUpdatePeriodUtils.handleRemovePeriods(period);
+        console.log("Periodo Removido");
+        periodsUtils.handleRemovePeriods(period);
       }
     });
   };
@@ -158,6 +182,8 @@ const CreateUpdatePeriod = ({ navigation, route }) => {
             backgroundColor: theme.colors.background,
           }}
         >
+          <LoadScreen loading={loading} />
+
           <IconButton
             icon={() => (
               <MaterialCommunityIcons
@@ -306,7 +332,7 @@ const CreateUpdatePeriod = ({ navigation, route }) => {
           <DatePickerModal
             startYear={2023}
             endYear={2024}
-            locale="en"
+            locale={es}
             mode="single"
             visible={openStartDate}
             onDismiss={onDismissStartDate}
@@ -320,7 +346,7 @@ const CreateUpdatePeriod = ({ navigation, route }) => {
           <DatePickerModal
             startYear={2023}
             endYear={2024}
-            locale="en"
+            locale={es}
             mode="single"
             visible={openEndDate}
             onDismiss={onDismissEndDate}
@@ -332,6 +358,13 @@ const CreateUpdatePeriod = ({ navigation, route }) => {
           />
         </View>
       </ScrollView>
+      {snackbarVisible ? (
+        <SnackbarMsg
+          open={snackbarVisible}
+          close={setSnackbarVisible.bind(null)}
+          type={snackbarType}
+        />
+      ) : null}
     </View>
   );
 };

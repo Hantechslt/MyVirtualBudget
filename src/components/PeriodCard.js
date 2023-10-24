@@ -71,7 +71,7 @@ const PeriodCard = (props) => {
           <IconButton
             icon={() => (
               <MaterialCommunityIcons
-                name="rotate-3d-variant"
+                name={Config.CHANGE_PERIOD}
                 size={Config.ICON_SIZE}
                 style={{
                   color: theme.colors.primary,
@@ -150,7 +150,7 @@ const PeriodCard = (props) => {
           <IconButton
             icon={() => (
               <MaterialCommunityIcons
-                name="folder-table"
+                name={Config.BUDGET_ICON}
                 size={Config.ICON_SIZE}
                 style={{
                   color: theme.colors.primary,
@@ -167,7 +167,7 @@ const PeriodCard = (props) => {
           <IconButton
             icon={() => (
               <MaterialCommunityIcons
-                name="file-edit-outline"
+                name={Config.EDIT_ICON}
                 size={Config.ICON_SIZE}
                 style={{
                   color: theme.colors.primary,

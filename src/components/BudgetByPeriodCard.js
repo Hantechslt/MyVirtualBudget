@@ -14,6 +14,7 @@ import {
 import Utilities from "@Utilities/Utilities";
 import MainStyleSheet from "@Styles/MainStyleSheet";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
+import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 
 import Config from "@Config/Config";
 
@@ -50,7 +51,7 @@ const BudgetByPeriodCard = (props) => {
             {...props}
             icon={() => (
               <MaterialCommunityIcons
-                name="folder-table"
+                name={Config.BUDGET_ICON}
                 size={Config.ICON_SIZE}
                 style={{
                   color: theme.colors.shadow,
@@ -66,7 +67,7 @@ const BudgetByPeriodCard = (props) => {
               {...props}
               icon={() => (
                 <MaterialCommunityIcons
-                  name="file-edit-outline"
+                  name={Config.EDIT_ICON}
                   size={Config.ICON_SIZE}
                   style={{
                     color: theme.colors.primary,
@@ -110,7 +111,7 @@ const BudgetByPeriodCard = (props) => {
           <IconButton
             icon={() => (
               <MaterialCommunityIcons
-                name="file-document-outline"
+                name={Config.REPORT_ICON}
                 size={Config.ICON_SIZE}
                 style={{
                   color: theme.colors.primary,
@@ -121,9 +122,9 @@ const BudgetByPeriodCard = (props) => {
           />
           <IconButton
             icon={() => (
-              <MaterialCommunityIcons
-                name="plus"
-                size={Config.ICON_SIZE}
+              <FontAwesome5
+                name={Config.ADD_EXPENSE_ICON}
+                size={17}
                 style={{
                   color: theme.colors.primary,
                 }}

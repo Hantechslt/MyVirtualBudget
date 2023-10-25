@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import {
   useTheme,
   TextInput,
@@ -12,7 +12,6 @@ import {
 
 import PeriodsHome from "@Periods/Periods";
 import { View } from "react-native";
-import MainStyleSheet from "@Styles/MainStyleSheet";
 import {
   DrawerContentScrollView,
   createDrawerNavigator,
@@ -20,21 +19,39 @@ import {
 } from "@react-navigation/drawer";
 import Config from "@Config/Config";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
-import DrawerItemCostume from "@Components/DrawerItemCostume";
-import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
+import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 
+import DrawerItemCostume from "@Components/DrawerItemCostume";
+import { MainContext } from "@Contexts/MainContext";
+import CustomTheme from "@Themes/CustomTheme";
+import MainStyleSheet from "@Styles/MainStyleSheet";
+import Summary from "@Summary/Summary";
+import Notes from "@Notes/Notes";
 const Drawer = createDrawerNavigator();
 
 function DrawerNav() {
   const theme = useTheme();
+  const { updateSelectedTheme } = useContext(MainContext);
+  const [isDarkTheme, setIsDarkTheme] = useState(true);
+
   const [expanded, setExpanded] = useState(true);
+  const [expandedQuery, setExpandedQuery] = useState(true);
+  const [expandedSetting, setExpandedSetting] = useState(true);
+
   const [options, setOptions] = useState([
     {
-      label: "Presupuestos",
+      label: "Presupuesto",
       navigate: "Finances",
       iconName: Config.BUDGET_ICON,
     },
-    { label: "Consultas", navigate: "", iconName: "chart-bar-stacked" },
+  ]);
+
+  const [queryOptions, setQueryOptions] = useState([
+    {
+      label: "Resumen general",
+      navigate: "Summary",
+      iconName: Config.SUMMARY_ICON,
+    },
     {
       label: "Notas",
       navigate: "Notes",
@@ -47,38 +64,36 @@ function DrawerNav() {
     },
   ]);
 
-  const [queryOptions, setQueryOptions] = useState([
-    {
-      label: "Gastos",
-      navigate: "",
-      iconName: Config.ADD_EXPENSE_ICON,
-      isFontAwesome: true,
-      iconSize: 16,
-    },
-  ]);
-
   const [settingOptions, setSettingOptions] = useState([
     {
-      label: "Temas",
+      label: "Generales",
       navigate: "",
-      iconName: "theme-light-dark",
+      iconName: "account-cog-outline",
     },
+
     {
-      label: "Monedas",
+      label: "V3.0",
       navigate: "",
-      iconName: "hand-coin-outline",
+      iconName: "source-branch",
     },
   ]);
 
+  const changeTheme = () => {
+    if (isDarkTheme) {
+      setIsDarkTheme(false);
+      updateSelectedTheme(CustomTheme.WhiteTheme);
+    } else {
+      setIsDarkTheme(true);
+      updateSelectedTheme(CustomTheme.DarkTheme);
+    }
+  };
   function CustomDrawerContent(props) {
     return (
       <DrawerContentScrollView>
         <View
           style={{
-            alignContent: "center",
-            justifyContent: "center",
-            alignSelf: "flex-start",
-            margin: "3%",
+            ...MainStyleSheet.viewRow,
+            marginHorizontal: "2%",
           }}
         >
           <Text
@@ -91,10 +106,28 @@ function DrawerNav() {
           >
             MyBudget
           </Text>
+          <IconButton
+            {...props}
+            icon={() => (
+              <MaterialCommunityIcons
+                name={isDarkTheme ? "white-balance-sunny" : "weather-night"}
+                size={Config.ICON_SIZE}
+                style={{
+                  color: theme.colors.primary,
+                }}
+              />
+            )}
+            onPress={() => {
+              changeTheme();
+            }}
+          />
         </View>
         <Divider />
         <List.Accordion
           title="Mis finanzas"
+          titleStyle={{
+            color: theme.colors.primary,
+          }}
           left={(props) => (
             <List.Icon
               {...props}
@@ -113,18 +146,21 @@ function DrawerNav() {
           expanded={expanded}
           onPress={() => setExpanded(!expanded)}
         >
-          {options.map((option) => {
-            return <DrawerItemCostume {...props} option={option} />;
+          {options.map((option, i) => {
+            return <DrawerItemCostume key={i} {...props} option={option} />;
           })}
         </List.Accordion>
         <List.Accordion
           title="Consultas"
+          titleStyle={{
+            color: theme.colors.primary,
+          }}
           left={(props) => (
             <List.Icon
               {...props}
               icon={() => (
                 <MaterialCommunityIcons
-                  name="text-box-search"
+                  name="folder-eye-outline"
                   onPress={() => navigation.goBack()}
                   size={20}
                   style={{
@@ -134,21 +170,24 @@ function DrawerNav() {
               )}
             />
           )}
-          expanded={expanded}
-          onPress={() => setExpanded(!expanded)}
+          expanded={expandedQuery}
+          onPress={() => setExpandedQuery(!expandedQuery)}
         >
-          {queryOptions.map((option) => {
-            return <DrawerItemCostume {...props} option={option} />;
+          {queryOptions.map((option, i) => {
+            return <DrawerItemCostume key={i} {...props} option={option} />;
           })}
         </List.Accordion>
         <List.Accordion
           title="Ajustes"
+          titleStyle={{
+            color: theme.colors.primary,
+          }}
           left={(props) => (
             <List.Icon
               {...props}
               icon={() => (
                 <MaterialCommunityIcons
-                  name="account-wrench"
+                  name="account-cog-outline"
                   onPress={() => navigation.goBack()}
                   size={20}
                   style={{
@@ -158,38 +197,17 @@ function DrawerNav() {
               )}
             />
           )}
-          expanded={expanded}
-          onPress={() => setExpanded(!expanded)}
+          expanded={expandedSetting}
+          onPress={() => setExpandedSetting(!expandedSetting)}
         >
-          {settingOptions.map((option) => {
-            return <DrawerItemCostume {...props} option={option} />;
+          {settingOptions.map((option, i) => {
+            return <DrawerItemCostume key={i} {...props} option={option} />;
           })}
         </List.Accordion>
       </DrawerContentScrollView>
     );
   }
 
-  function feed() {
-    return (
-      <View style={MainStyleSheet.viewRow}>
-        <View style={MainStyleSheet.viewInputCode}>
-          <TextInput
-            label="Código"
-            mode="outlined"
-            keyboardType="phone-pad"
-            editable={false}
-          />
-        </View>
-        <View style={MainStyleSheet.viewInputPhone}>
-          <TextInput
-            label="Número de teléfono"
-            mode="outlined"
-            keyboardType="phone-pad"
-          />
-        </View>
-      </View>
-    );
-  }
   return (
     <Drawer.Navigator
       drawerContent={(props) => (
@@ -199,6 +217,8 @@ function DrawerNav() {
         drawerStyle: {
           backgroundColor: theme.colors.background,
           width: "75%",
+          borderTopRightRadius: 10,
+          borderBottomRightRadius: 10,
         },
         drawerActiveBackgroundColor: theme.colors.secondaryContainer,
         drawerActiveTintColor: "#ffffff",
@@ -221,7 +241,7 @@ function DrawerNav() {
       />
       <Drawer.Screen
         name="Notes"
-        component={feed}
+        component={Notes}
         options={{
           headerStyle: {
             backgroundColor: theme.colors.background,
@@ -230,6 +250,7 @@ function DrawerNav() {
           headerLeftContainerStyle: {
             backgroundColor: theme.colors.background,
           },
+          title: "Notas",
         }}
       />
     </Drawer.Navigator>

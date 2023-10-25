@@ -8,6 +8,8 @@ const EDIT_ICON = "file-edit-outline";
 const ADD_EXPENSE_ICON = "money-check-alt";
 const REPORT_ICON = "file-document-outline";
 const CHANGE_PERIOD = "rotate-3d-variant";
+const SUMMARY_ICON = "chart-bell-curve";
+
 
 export default {
   MY_BUDGET,
@@ -20,4 +22,5 @@ export default {
   ADD_EXPENSE_ICON,
   REPORT_ICON,
   CHANGE_PERIOD,
+  SUMMARY_ICON,
 };

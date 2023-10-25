@@ -1,3 +1,4 @@
+import CustomTheme from "@Themes/CustomTheme";
 import React, { createContext, useReducer } from "react";
 
 // Define tus variables iniciales
@@ -6,6 +7,7 @@ const mainVariables = {
   BUDGETS_BY_PERIOD: null,
   EXPENSES_BY_BUDGET: null,
   SELECTED_PERIOD: null,
+  SELECTED_THEME: CustomTheme.DarkTheme,
 };
 
 // Define los tipos de acciones para actualizar el contexto
@@ -14,6 +16,7 @@ const ActionTypes = {
   UPDATE_BUDGETS_BY_PERIOD: "UPDATE_BUDGETS_BY_PERIOD",
   UPDATE_EXPENSES_BY_BUDGET: "UPDATE_EXPENSES_BY_BUDGET",
   UPDATE_SELECTED_PERIOD: "UPDATE_SELECTED_PERIOD",
+  UPDATE_SELECTED_THEME: "UPDATE_SELECTED_THEME",
 };
 
 const mainReducer = (state, action) => {
@@ -26,6 +29,8 @@ const mainReducer = (state, action) => {
       return { ...state, EXPENSES_BY_BUDGET: action.payload };
     case ActionTypes.UPDATE_SELECTED_PERIOD:
       return { ...state, SELECTED_PERIOD: action.payload };
+    case ActionTypes.UPDATE_SELECTED_THEME:
+      return { ...state, SELECTED_THEME: action.payload };
     default:
       return state;
   }
@@ -58,6 +63,13 @@ const MainProvider = ({ children }) => {
       payload: newSelectedPeriod,
     });
   };
+  const updateSelectedTheme = (newSelectedTheme) => {
+    dispatch({
+      type: ActionTypes.UPDATE_SELECTED_THEME,
+      payload: newSelectedTheme,
+    });
+  };
+
   return (
     <MainContext.Provider
       value={{
@@ -66,6 +78,7 @@ const MainProvider = ({ children }) => {
         updateBudgetsByPeriod,
         updateExpensesByBudget,
         updateSelectedPeriod,
+        updateSelectedTheme,
       }}
     >
       {children}

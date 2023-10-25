@@ -86,6 +86,16 @@ const WhiteTheme = {
     outline: "rgb(124, 117, 126)",
     outlineVariant: "rgb(204, 196, 206)",
     shadow: "rgb(0, 0, 0)",
+    //greens//
+    darkGreen: "rgb(0, 100, 0)",
+    oliveGreen: "rgb(85, 107, 47)",
+    emeraldGreen: "rgb(0, 128, 0)",
+    mintGreen: "rgb(0, 255, 0)",
+    //reds
+    darkRed: "rgb(139, 0, 0)",
+    crimsonRed: "rgb(220, 20, 60)",
+    scarletRed: "rgb(255, 69, 0)",
+    wineRed: "rgb(128, 0, 0)",
     scrim: "rgb(0, 0, 0)",
     inverseSurface: "rgb(50, 47, 51)",
     inverseOnSurface: "rgb(245, 239, 244)",

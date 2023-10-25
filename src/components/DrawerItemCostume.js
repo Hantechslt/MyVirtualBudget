@@ -4,14 +4,15 @@ import { DrawerItem } from "@react-navigation/drawer";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { useTheme } from "react-native-paper";
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
-
+import Utilities from "@Utilities/Utilities";
 const DrawerItemCostume = (props) => {
   const theme = useTheme();
   return (
     <DrawerItem
+      key={props.key}
       label={props.option.label}
       labelStyle={{
-        color: theme.colors.primary,
+        color: theme.colors.secondary,
       }}
       icon={(focus) =>
         props.option.isFontAwesome ? (
@@ -19,7 +20,7 @@ const DrawerItemCostume = (props) => {
             name={props.option.iconName}
             size={props.option.iconSize}
             style={{
-              color: theme.colors.primary,
+              color: theme.colors.secondary,
             }}
           />
         ) : (
@@ -27,12 +28,16 @@ const DrawerItemCostume = (props) => {
             name={props.option.iconName}
             size={20}
             style={{
-              color: theme.colors.primary,
+              color: theme.colors.secondary,
             }}
           />
         )
       }
-      onPress={() => props.navigation.navigate(props.option.navigate)}
+      onPress={() =>
+        props.option.navigate !== ""
+          ? props.navigation.navigate(props.option.navigate)
+          : null
+      }
       style={{
         backgroundColor: theme.colors.surface,
         marginHorizontal: "6%",

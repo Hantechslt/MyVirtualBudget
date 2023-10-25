@@ -6,7 +6,8 @@ import { useTheme } from "react-native-paper";
 import CreateUpdatePeriod from "@Periods/CreateUpdatePeriod";
 import CreateUpdateBudget from "@BudgetsByPeriod/CreateUpdateBudget";
 import CreateUpdateExpense from "@ExpensesByBudget/CreateUpdateExpense";
-
+import ExpensesByBudget from "@ExpensesByBudget/ExpensesByBudget";
+import Summary from "@Summary/Summary";
 const Stack = createStackNavigator();
 
 const UserStack = () => {
@@ -41,6 +42,22 @@ const UserStack = () => {
       <Stack.Screen
         name="CreateUpdateExpense"
         component={CreateUpdateExpense}
+        options={{
+          cardStyle: { backgroundColor: theme.colors.background },
+          headerShown: false,
+        }}
+      />
+      <Stack.Screen
+        name="ExpensesByBudget"
+        component={ExpensesByBudget}
+        options={{
+          cardStyle: { backgroundColor: theme.colors.background },
+          headerShown: false,
+        }}
+      />
+      <Stack.Screen
+        name="Summary"
+        component={Summary}
         options={{
           cardStyle: { backgroundColor: theme.colors.background },
           headerShown: false,

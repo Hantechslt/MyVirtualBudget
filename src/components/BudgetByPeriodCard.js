@@ -85,7 +85,7 @@ const BudgetByPeriodCard = (props) => {
           <ProgressBar
             theme={{
               colors: {
-                surfaceVariant: theme.colors.shadow,
+                surfaceVariant: theme.colors.onSecondary,
               },
             }}
             progress={Utilities.getRatios(

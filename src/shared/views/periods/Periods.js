@@ -136,7 +136,7 @@ const Budgets = ({ navigation }) => {
     <View
       style={{
         ...MainStyleSheet.backView,
-        backgroundColor: theme.colors.shadow,
+        backgroundColor: theme.colors.background,
       }}
     >
       <View

@@ -27,6 +27,7 @@ import CustomTheme from "@Themes/CustomTheme";
 import MainStyleSheet from "@Styles/MainStyleSheet";
 import Summary from "@Summary/Summary";
 import Notes from "@Notes/Notes";
+import FinancialTips from "@FinancialTips/FinancialTips";
 const Drawer = createDrawerNavigator();
 
 function DrawerNav() {
@@ -58,8 +59,8 @@ function DrawerNav() {
       iconName: "notebook-outline",
     },
     {
-      label: "Consejos financieros",
-      navigate: "Notes",
+      label: "Tips financieros",
+      navigate: "FinancialTips",
       iconName: "lightbulb-on-outline",
     },
   ]);
@@ -240,6 +241,20 @@ function DrawerNav() {
         }}
       />
       <Drawer.Screen
+        name="Summary"
+        component={Summary}
+        options={{
+          headerStyle: {
+            backgroundColor: theme.colors.background,
+          },
+          headerTintColor: theme.colors.primary,
+          headerLeftContainerStyle: {
+            backgroundColor: theme.colors.background,
+          },
+          title: "Resumen general",
+        }}
+      />
+      <Drawer.Screen
         name="Notes"
         component={Notes}
         options={{
@@ -251,6 +266,20 @@ function DrawerNav() {
             backgroundColor: theme.colors.background,
           },
           title: "Notas",
+        }}
+      />
+      <Drawer.Screen
+        name="FinancialTips"
+        component={FinancialTips}
+        options={{
+          headerStyle: {
+            backgroundColor: theme.colors.background,
+          },
+          headerTintColor: theme.colors.primary,
+          headerLeftContainerStyle: {
+            backgroundColor: theme.colors.background,
+          },
+          title: "Tips financieros",
         }}
       />
     </Drawer.Navigator>

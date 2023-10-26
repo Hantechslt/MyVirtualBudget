@@ -16,7 +16,8 @@
       "@BudgetsByPeriod/*":["src/shared/views/budgetsByPeriod/*"],
       "@ExpensesByBudget/*":["src/shared/views/expensesByBudget/*"],
       "@Summary/*":["./src/shared/views/summary/*"],
-      "@Notes/*":["./src/shared/views/notes/*"]
+      "@Notes/*":["./src/shared/views/notes/*"],
+      "@FinancialTips/*":["./src/shared/views/FinancialTips/*"]
 
     }
   }

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 
 import {
   LineChart,
@@ -21,52 +21,157 @@ import {
   Tooltip,
 } from "react-native-paper";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
+import { MainContext } from "@Contexts/MainContext";
+import moment from "moment";
 
 import { View, ScrollView } from "react-native";
 import { Dimensions } from "react-native";
 import MainStyleSheet from "@Styles/MainStyleSheet";
 import Config from "@Config/Config";
+import Utilities from "@Utilities/Utilities";
+import Ionicons from "react-native-vector-icons/Ionicons";
+import SelectModal from "@Components/SelectModal";
+import ExpensesByBudgetUtils from "@ExpensesByBudget/ExpensesByBudgetUtils";
+import BudgetsByPeriodUtils from "@BudgetsByPeriod/BudgetsByPeriodUtils";
+
 const Summary = ({ navigation }) => {
   const theme = useTheme();
 
-  const screenWidth = Dimensions.get("window").width;
+  const {
+    PERIODS,
+    SELECTED_PERIOD,
+    BUDGETS_BY_PERIOD,
+    EXPENSES_BY_BUDGET,
+    updateExpensesByBudget,
+    updateBudgetsByPeriod,
+  } = useContext(MainContext);
 
-  const [labels, setLabels] = useState([]);
-  const [values, setData] = useState([]);
-  const [selectedPoint, setSelectedPoint] = useState(null);
-  const [tooltipVisible, setTooltipVisible] = useState(false);
+  const expensesByBudgetUtils = new ExpensesByBudgetUtils(
+    EXPENSES_BY_BUDGET,
+    updateExpensesByBudget
+  );
+  const budgetsByPeriodUtils = new BudgetsByPeriodUtils(
+    BUDGETS_BY_PERIOD,
+    updateBudgetsByPeriod
+  );
 
   const chartConfig = {
-    backgroundGradientFrom: "#1E2923",
-    backgroundGradientFromOpacity: 0,
-    backgroundGradientTo: "#08130D",
-    backgroundGradientToOpacity: 0.5,
-    color: (opacity = 1) => `rgba(26, 255, 146, ${opacity})`,
-    strokeWidth: 2, // optional, default 3
-    barPercentage: 0.5,
-    useShadowColorFromDataset: false, // optional
+    backgroundColor: theme.colors.primary,
+    backgroundGradientFrom: theme.colors.secondaryContainer,
+    backgroundGradientTo: theme.colors.secondaryContainer,
+    decimalPlaces: 1, // optional, defaults to 2dp
+    color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
+    labelColor: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
+    style: {
+      borderRadius: 17,
+    },
+    propsForDots: {
+      r: "3",
+      strokeWidth: "1",
+      stroke: theme.colors.onPrimaryContainer,
+    },
   };
+
+  const screenWidth = Dimensions.get("window").width;
+
+  const [screenWidthExpenses, setScreenWidthExpenses] = useState(screenWidth);
+  const [screenWidthBudgets, setScreenWidthBudgets] = useState(screenWidth);
+
+  const [budgetLabels, setBudgetLabels] = useState([]);
+  const [budgetValues, setBudgetValues] = useState([]);
+
+  const [expensesLabels, setExpensesLabels] = useState([]);
+  const [expensesValues, setExpensesValues] = useState([]);
+
+  const [selectBudgets, setSelectBudgets] = useState([]);
+  const [selectPeriods, setSelectPeriods] = useState([]);
+  const [selectedPeriod, setSelectedPeriod] = useState(null);
+  const [selectedBudget, setSelectedBudget] = useState(null);
+
+  const [openBudgets, setOpenBudgets] = useState(false);
+  const [openPeriods, setOpenPeriods] = useState(false);
+
   useEffect(() => {
-    let labelsArray = [];
-    let DataArray = [];
-
-    for (let index = 0; index < 30; index++) {
-      labelsArray.push(index);
-      DataArray.push(Math.random() * 100);
-    }
-
-    setLabels(labelsArray);
-    setData(DataArray);
+    //Alimentar los select
+    setSelectedPeriod(SELECTED_PERIOD);
+    setSelectPeriods(PERIODS);
+    setSelectBudgets(BUDGETS_BY_PERIOD);
+    const budgetsArray = budgetsByPeriodUtils.handleGetBudgetByPeriod(
+      BUDGETS_BY_PERIOD,
+      "periodKey",
+      SELECTED_PERIOD.index
+    );
+    budgetsArray.forEach((budget) => {
+      budget["label"] = budget.budgetName;
+      budget["description"] = Utilities.getLocaleCurrency(
+        budget.amount,
+        "es-CR",
+        "CRC"
+      );
+    });
+    handleLoadBudgetChart(SELECTED_PERIOD);
+    setSelectedBudget(budgetsArray[0]);
+    handleLoadExpensesChart(budgetsArray[0]);
   }, []);
 
-  const handleDataPointClick = (point) => {
-    console.log(point);
-    setSelectedPoint(point);
-    setTooltipVisible(true);
+  const handleLoadBudgetChart = (period) => {
+    const budgetsArray = budgetsByPeriodUtils.handleGetBudgetByPeriod(
+      BUDGETS_BY_PERIOD,
+      "periodKey",
+      period.index
+    );
+
+    let budgetLabelsArray = [];
+    let budgetValuesArray = [];
+
+    budgetsArray.forEach((budget) => {
+      budgetLabelsArray.push(budget.budgetName);
+      budgetValuesArray.push((budget.amount / 1000).toFixed(1));
+    });
+    let screenW = budgetsArray.length / 4;
+    if (screenWidthBudgets > screenWidthExpenses) {
+      setScreenWidthExpenses(screenWidthBudgets);
+    }
+    setScreenWidthBudgets(screenWidth * (screenW < 1 ? 1 : screenW));
+    setBudgetLabels(budgetLabelsArray);
+    setBudgetValues(budgetValuesArray);
   };
 
-  const closeTooltip = () => {
-    setTooltipVisible(false);
+  const handleLoadExpensesChart = (budget) => {
+    let expensesLabelsArray = [];
+    let expensesValuesArray = [];
+    let expenses = expensesByBudgetUtils.handleGetExpenseByBudget(
+      EXPENSES_BY_BUDGET,
+      "budgetKey",
+      budget.index
+    );
+
+    expenses.forEach((expense) => {
+      expensesLabelsArray.push(moment(expense.index).format("DD"));
+      expensesValuesArray.push((expense.amount / 1000).toFixed(1));
+    });
+
+    let screenW = expenses.length / 8;
+    setScreenWidthExpenses(screenWidth * (screenW < 1 ? 1 : screenW));
+    if (screenWidthBudgets > screenWidthExpenses) {
+      setScreenWidthExpenses(screenWidthBudgets);
+    }
+    
+    setExpensesLabels(expensesLabelsArray);
+    setExpensesValues(expensesValuesArray);
+  };
+
+  const handleSelectPeriod = (period) => {
+    setSelectedPeriod(period);
+  };
+
+  const handleSelectBudget = (budget) => {
+    handleLoadExpensesChart(budget);
+    setSelectedBudget(budget);
+  };
+
+  const handleOpenSelectBudget = () => {
+    setOpenBudgets(true);
   };
 
   return (
@@ -75,128 +180,183 @@ const Summary = ({ navigation }) => {
         style={{
           ...MainStyleSheet.backView,
           backgroundColor: theme.colors.background,
-          width: Dimensions.get("window").width * 2,
+          width: screenWidthExpenses,
         }}
       >
-        <View
-          style={{
-            ...MainStyleSheet.frontView,
-            backgroundColor: theme.colors.background,
-            width: Dimensions.get("window").width * 2,
-          }}
-        >
-          <IconButton
-            icon={() => (
-              <MaterialCommunityIcons
-                name="keyboard-backspace"
-                onPress={() => navigation.goBack()}
-                size={30}
-                style={{
-                  color: theme.colors.primary,
-                }}
-              />
-            )}
-            onPress={() => {}}
-          />
+        <ScrollView>
           <View
             style={{
-              justifyContent: "center",
-              alignItems: "flex-start",
+              ...MainStyleSheet.frontView,
+              backgroundColor: theme.colors.background,
+              width: screenWidthExpenses,
             }}
           >
-            <Avatar.Icon
+            <IconButton
+              mode="outlined"
               icon={() => (
-                <MaterialCommunityIcons
-                  name={Config.SUMMARY_ICON}
+                <Ionicons
+                  name="wallet"
                   size={Config.ICON_SIZE}
                   style={{
-                    color: theme.colors.shadow,
+                    color: theme.colors.primary,
                   }}
                 />
               )}
+              onPress={() => setOpenPeriods(true)}
             />
             <Text
               style={{ color: theme.colors.onBackground }}
-              variant="headlineMedium"
+              variant="titleMedium"
             >
-              Resumen General
+              {selectPeriods !== null
+                ? Utilities.getFormatPeriodDate(
+                    selectPeriods.startData,
+                    selectPeriods.endDate
+                  )
+                : ""}
             </Text>
-          </View>
-          <Divider
-            style={{
-              marginVertical: "3%",
-            }}
-          />
-          {values.length !== 0 ? (
-            <LineChart
-              data={{
-                labels: labels,
-                datasets: [
-                  {
-                    data: values,
-                    //withDots: false, //pone los puntos
-                  },
-                ],
-              }}
-              width={Dimensions.get("window").width * 2} // from react-native
-              height={220}
-              yAxisLabel="$"
-              yAxisSuffix="k"
-              yAxisInterval={1} // optional, defaults to 1
-              onDataPointClick={({ value, dataset, getColor, x, y }) => {
-                alert(`Valor: ${value}`);
-              }}
-              /*renderDotContent={({ x, y, index, indexData }) => {
-                return (
-                  <View
-                    style={{ position: "absolute", top: y - 30, left: x - 15 }}
-                  >
-                    <Text>{indexData}</Text>
-                  </View>
-                );
-              }}*/
-              chartConfig={{
-                backgroundColor: theme.colors.primary,
-                backgroundGradientFrom: theme.colors.secondaryContainer,
-                backgroundGradientTo: theme.colors.secondaryContainer,
-                decimalPlaces: 2, // optional, defaults to 2dp
-                color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
-                labelColor: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
-                style: {
-                  borderRadius: 17,
-                },
-                propsForDots: {
-                  r: "6",
-                  strokeWidth: "2",
-                  stroke: theme.colors.onPrimaryContainer,
-                },
-              }}
-              bezier
-              style={{
-                marginVertical: 8,
-                borderRadius: 7,
-              }}
+            {budgetValues.length !== 0 ? (
+              <BarChart
+                //style={graphStyle}
+                data={{
+                  labels: budgetLabels,
+                  datasets: [
+                    {
+                      data: budgetValues,
+
+                      //withDots: false, //pone los puntos
+                    },
+                  ],
+                }}
+                showBarTops={false}
+                width={screenWidthBudgets}
+                height={220}
+                yAxisSuffix="k"
+                chartConfig={chartConfig}
+                showValuesOnTopOfBars={true}
+                fromZero={true}
+                formatYLabel={(yValue) => {
+                  return (
+                    Utilities.getLocaleCurrency(yValue, "es-CR", "CRC") + "k"
+                  );
+                }}
+                withInnerLines={false}
+                fromNumber={SELECTED_PERIOD.amount / 1000}
+                bezier
+                style={{
+                  marginVertical: 8,
+                  borderRadius: 7,
+                }}
+              />
+            ) : null}
+
+            <IconButton
+              mode="outlined"
+              icon={() => (
+                <MaterialCommunityIcons
+                  name={Config.BUDGET_ICON}
+                  size={Config.ICON_SIZE}
+                  style={{
+                    color: theme.colors.primary,
+                  }}
+                />
+              )}
+              onPress={() => handleOpenSelectBudget()}
             />
-          ) : null}
-        </View>
-        {selectedPoint && (
-          <Tooltip
-            visible={tooltipVisible}
-            onDismiss={closeTooltip}
-            content={
-              <Text style={{ color: theme.colors.primary }}>
-                Valor: {selectedPoint.y}
-              </Text>
-            }
-            style={{
-              position: "absolute",
-              top: selectedPoint.y - 40,
-              left: selectedPoint.x - 20,
-            }}
-          >
-            <View />
-          </Tooltip>
-        )}
+            <Text
+              style={{ color: theme.colors.onBackground }}
+              variant="titleMedium"
+            >
+              {selectedBudget !== null ? selectedBudget.budgetName : ""}
+            </Text>
+            {expensesValues.length !== 0 ? (
+              <LineChart
+                data={{
+                  labels: expensesLabels,
+                  datasets: [
+                    {
+                      data: expensesValues,
+
+                      //withDots: false, //pone los puntos
+                      legend: ["Rainy Days"], // optional
+                    },
+                  ],
+                }}
+                width={screenWidthExpenses} // from react-native
+                height={220}
+                //yAxisLabel="$"
+                //yAxisSuffix="k"
+                formatYLabel={(yValue) => {
+                  return (
+                    Utilities.getLocaleCurrency(yValue, "es-CR", "CRC") + "k"
+                  );
+                }}
+                fromNumber={BUDGETS_BY_PERIOD[2].amount / 1000}
+                yAxisInterval={1} // optional, defaults to 1
+                fromZero={true}
+                yla
+                onDataPointClick={({
+                  index,
+                  value,
+                  dataset,
+                  getColor,
+                  x,
+                  y,
+                }) => {
+                  alert(`Valor: ${dataset.data}`);
+                }}
+                renderDotContent={({ x, y, index, indexData }) => {
+                  return (
+                    <View
+                      key={index}
+                      style={{
+                        position: "absolute",
+                        top: y - 30,
+                        left: x - 15,
+                      }}
+                    >
+                      <Text style={{ fontSize: 10 }}>
+                        {Utilities.getLocaleCurrency(
+                          indexData,
+                          "es-CR",
+                          "CRC"
+                        ) + "k "}
+                      </Text>
+                    </View>
+                  );
+                }}
+                chartConfig={chartConfig}
+                withInnerLines={false}
+                withVerticalLines={false}
+                withHorizontalLines={false}
+                yLabelsOffset={18}
+                bezier
+                style={{
+                  marginVertical: 8,
+                  borderRadius: 7,
+                }}
+              />
+            ) : null}
+          </View>
+        </ScrollView>
+        {selectPeriods.length !== 0 ? (
+          <SelectModal
+            open={openPeriods}
+            close={setOpenPeriods.bind(null)}
+            items={selectPeriods}
+            setValue={handleSelectPeriod.bind(null)}
+            title={"Seleccione un periodo"}
+          />
+        ) : null}
+        {selectBudgets.length !== 0 ? (
+          <SelectModal
+            open={openBudgets}
+            close={setOpenBudgets.bind(null)}
+            items={selectBudgets}
+            setValue={handleSelectBudget.bind(null)}
+            title={"Seleccione un presupuesto"}
+          />
+        ) : null}
       </View>
     </ScrollView>
   );

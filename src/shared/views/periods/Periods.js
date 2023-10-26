@@ -61,9 +61,11 @@ const Budgets = ({ navigation }) => {
           //Obtenemos todos los presupuestos.
           const budgetByPeriod =
             budgetByPeriodUtils.handleGetBudgetsByPeriod(updatePeriod);
+
           //Obtenemos todos los gastos de los presupuestos
           const ExpensesByPeriod =
             expensesByBudgetUtils.handleGetExpensesByBudget(budgetByPeriod);
+
           //Almacenamos la información en memoria
           updateExpensesByBudget(ExpensesByPeriod);
           updateBudgetsByPeriod(budgetByPeriod);
@@ -87,7 +89,7 @@ const Budgets = ({ navigation }) => {
    */
   useFocusEffect(
     useCallback(() => {
-      if (PERIODS !== null) {        
+      if (PERIODS !== null) {
         handleRefreshBudgets(SELECTED_PERIOD.index);
       }
     }, [BUDGETS_BY_PERIOD, EXPENSES_BY_BUDGET])

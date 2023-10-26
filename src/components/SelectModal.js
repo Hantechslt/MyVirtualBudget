@@ -7,6 +7,7 @@ import {
   List,
   Text,
   useTheme,
+  Divider,
 } from "react-native-paper";
 import MainStyleSheet from "@Styles/MainStyleSheet";
 

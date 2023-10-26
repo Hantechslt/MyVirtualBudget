@@ -18,6 +18,7 @@ import { View, ScrollView } from "react-native";
 import MainStyleSheet from "@Styles/MainStyleSheet";
 import Config from "@Config/Config";
 import Utilities from "@Utilities/Utilities";
+import NotesCard from "@Components/NotesCard";
 const Notes = () => {
   const theme = useTheme();
   const [note, setNote] = useState("");
@@ -46,6 +47,7 @@ const Notes = () => {
   };
 
   const handleRemoveNote = (index) => {
+    console.log(index);
     let updateNotes = notes;
     updateNotes = Utilities.removeArrayItem(updateNotes, "index", index);
     setNotes(updateNotes);
@@ -84,60 +86,33 @@ const Notes = () => {
           backgroundColor: theme.colors.background,
         }}
       >
-        <View style={{ ...MainStyleSheet.viewRow, marginVertical: "3%" }}>
-          <TextInput
-            label="Escribe una nota o recordatorio"
-            mode="outlined"
-            value={note}
-            style={{ width: "85%" }}
-            onChangeText={(text) => setNote(text)}
-            numberOfLines={3}
-            multiline
-          />
-          <IconButton
-            icon={() => (
-              <MaterialCommunityIcons
-                name="plus"
-                onPress={() => handleAddNote()}
-                size={30}
-                style={{
-                  color: theme.colors.primary,
-                }}
-              />
-            )}
-            onPress={() => {}}
-          />
-        </View>
-        <Divider />
-
         <ScrollView>
           {notes.map((note) => {
             return (
-              <View key={note.index}>
-                <List.Item
-                  titleNumberOfLines={3}
-                  title={<Text style={{ width: "80%" }}>{note.note}</Text>}
-                  right={(props) => (
-                    <IconButton
-                      icon={() => (
-                        <MaterialCommunityIcons
-                          name="delete"
-                          onPress={() => handleRemoveNote(note.index)}
-                          size={20}
-                          style={{
-                            color: theme.colors.darkRed,
-                          }}
-                        />
-                      )}
-                      onPress={() => {}}
-                    />
-                  )}
-                />
-                <Divider />
-              </View>
+              <NotesCard              
+                notes={note}
+                handleRemoveNote={handleRemoveNote.bind(null)}
+              />
             );
           })}
         </ScrollView>
+        <Divider style={{ margin: "3%" }} />
+        <TextInput
+          label="Escribe una nota o recordatorio"
+          mode="outlined"
+          value={note}
+          style={{ width: "100%" }}
+          onChangeText={(text) => setNote(text)}
+          numberOfLines={3}
+          multiline
+        />
+        <Button
+          mode="contained-tonal"
+          onPress={() => handleAddNote()}
+          style={MainStyleSheet.primaryButton}
+        >
+          Agregar nota o recordatorio
+        </Button>
       </View>
     </View>
   );

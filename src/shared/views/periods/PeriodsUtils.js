@@ -45,13 +45,12 @@ class PeriodsUtils {
    * @param {*} objPeriod
    */
   handleRemovePeriods(objPeriod) {
-    this.PERIODS = Utilities.removeArrayItem(
+    const removedPeriod = Utilities.removeArrayItem(
       this.PERIODS,
       "index",
       objPeriod.index
     );
-
-    this.updatePeriods(...this.PERIODS);
+    this.updatePeriods(removedPeriod);
   }
   handleAddLabelDesc(periods) {
     periods.forEach((period) => {

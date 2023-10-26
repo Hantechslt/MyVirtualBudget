@@ -40,8 +40,8 @@ class ExpensesByBudgetUtils {
   handleGetExpensesByBudget(budgets) {
     const expensesByBudget = [];
     budgets.forEach((budget) => {
-      for (let key in budget.SpendingByBudget) {
-        expensesByBudget.push(budget.SpendingByBudget[key]);
+      for (let key in budget.ExpensesByBudget) {        
+        expensesByBudget.push(budget.ExpensesByBudget[key]);
       }
     });
 

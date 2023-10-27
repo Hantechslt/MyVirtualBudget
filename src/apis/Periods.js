@@ -16,14 +16,13 @@ import Config from "@Config/Config";
 
 class Budgets {
   getPeriodList = () => {
-
     const data = [];
     const refBD = FirebaseRefStructure.getPeriodsStructure(
       auth().currentUser.uid,
       Config.ENVIRONMENT
     );
     const dbRef = ref(firebaseSingleton.db, refBD);
-    const sortedQuery = query(dbRef, orderByChild("index"));    
+    const sortedQuery = query(dbRef);
     return get(sortedQuery)
       .then((snapshot) => {
         if (snapshot.exists()) {

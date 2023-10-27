@@ -6,12 +6,20 @@ class BudgetsByPeriodUtils {
     this.updateBudgetsByPeriod = updateBudgetsByPeriod;
   }
 
+  /**
+   * Agregar un periodo
+   * @param {*} objBudget
+   */
   handleCreateBudget(objBudget) {
     const updatedBudget = [...this.BUDGETS_BY_PERIOD, objBudget];
-    const sortedBudgets = Utilities.sortByIndex(updatedBudget, "index");    
+    const sortedBudgets = Utilities.sortArrayByIndex(updatedBudget, "index");
     this.updateBudgetsByPeriod(sortedBudgets);
   }
 
+  /**
+   * Actualizar un periodo
+   * @param {*} objBudget
+   */
   handleUpdateBudget(objBudget) {
     this.BUDGETS_BY_PERIOD = Utilities.removeArrayItem(
       this.BUDGETS_BY_PERIOD,
@@ -19,11 +27,14 @@ class BudgetsByPeriodUtils {
       objBudget.index
     );
     const updatedBudget = [...this.BUDGETS_BY_PERIOD, objBudget];
-    const sortedBudgets = Utilities.sortByIndex(updatedBudget, "index");
-
+    const sortedBudgets = Utilities.sortArrayByIndex(updatedBudget, "index");
     this.updateBudgetsByPeriod(sortedBudgets);
   }
 
+  /**
+   * Remover un periodo.
+   * @param {*} objBudget
+   */
   handleRemoveBudget(objBudget) {
     const removedBudget = Utilities.removeArrayItem(
       this.BUDGETS_BY_PERIOD,
@@ -33,10 +44,11 @@ class BudgetsByPeriodUtils {
     this.updateBudgetsByPeriod(removedBudget);
   }
 
-  handleGetBudgetByPeriod(budgets, property, value) {
-    return budgets.filter((budget) => budget[property] === value);
-  }
-
+  /**
+   * Retornar todos los prepuestos de los periodos actuales
+   * @param {*} periods
+   * @returns
+   */
   handleGetBudgetsByPeriod(periods) {
     const budgetByPeriod = [];
     periods.forEach((period) => {
@@ -44,8 +56,29 @@ class BudgetsByPeriodUtils {
         budgetByPeriod.push(period.BudgetByPeriod[key]);
       }
     });
+    const budgetByPeriodSort = Utilities.sortArrayByIndex(
+      budgetByPeriod,
+      "index"
+    );
 
-    return budgetByPeriod;
+    return budgetByPeriodSort;
+  }
+
+  /**
+   * Agregar propiedad extras a los datos de presupuestos esto para utilizarlo en los select
+   * @param {*} budgets
+   * @returns
+   */
+  handleAddLabelDesc(budgets) {
+    budgets.forEach((budget) => {
+      budget["label"] = budget.budgetName;
+      budget["description"] = Utilities.getLocaleCurrency(
+        budget.amount,
+        "es-CR",
+        "CRC"
+      );
+    });
+    return budgets;
   }
 }
 

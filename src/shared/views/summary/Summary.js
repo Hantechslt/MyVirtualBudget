@@ -33,6 +33,7 @@ import Ionicons from "react-native-vector-icons/Ionicons";
 import SelectModal from "@Components/SelectModal";
 import ExpensesByBudgetUtils from "@ExpensesByBudget/ExpensesByBudgetUtils";
 import BudgetsByPeriodUtils from "@BudgetsByPeriod/BudgetsByPeriodUtils";
+import { utils } from "@react-native-firebase/app";
 
 const Summary = ({ navigation }) => {
   const theme = useTheme();
@@ -67,7 +68,7 @@ const Summary = ({ navigation }) => {
     },
     propsForDots: {
       r: "3",
-      strokeWidth: "1",
+      strokeWidth: "2",
       stroke: theme.colors.onPrimaryContainer,
     },
   };
@@ -93,29 +94,22 @@ const Summary = ({ navigation }) => {
 
   useEffect(() => {
     //Alimentar los select
-    setSelectedPeriod(SELECTED_PERIOD);
+    setSelectedPeriod(SELECTED_PERIOD[0]);
     setSelectPeriods(PERIODS);
-    setSelectBudgets(BUDGETS_BY_PERIOD);
-    const budgetsArray = budgetsByPeriodUtils.handleGetBudgetByPeriod(
+    const budgetsArray = Utilities.filterArrayByProperty(
       BUDGETS_BY_PERIOD,
       "periodKey",
-      SELECTED_PERIOD.index
+      SELECTED_PERIOD[0].index
     );
-    budgetsArray.forEach((budget) => {
-      budget["label"] = budget.budgetName;
-      budget["description"] = Utilities.getLocaleCurrency(
-        budget.amount,
-        "es-CR",
-        "CRC"
-      );
-    });
-    handleLoadBudgetChart(SELECTED_PERIOD);
-    setSelectedBudget(budgetsArray[0]);
-    handleLoadExpensesChart(budgetsArray[0]);
-  }, []);
+    const budgetsSort = Utilities.sortArrayByIndex(budgetsArray, "index");
+    setSelectBudgets(budgetsSort);
+    handleLoadBudgetChart(SELECTED_PERIOD[0]);
+    setSelectedBudget(budgetsSort[0]);
+    handleLoadExpensesChart(budgetsSort[0]);
+  }, [BUDGETS_BY_PERIOD]);
 
   const handleLoadBudgetChart = (period) => {
-    const budgetsArray = budgetsByPeriodUtils.handleGetBudgetByPeriod(
+    const budgetsArray = Utilities.filterArrayByProperty(
       BUDGETS_BY_PERIOD,
       "periodKey",
       period.index
@@ -124,45 +118,65 @@ const Summary = ({ navigation }) => {
     let budgetLabelsArray = [];
     let budgetValuesArray = [];
 
-    budgetsArray.forEach((budget) => {
-      budgetLabelsArray.push(budget.budgetName);
-      budgetValuesArray.push((budget.amount / 1000).toFixed(1));
-    });
-    let screenW = budgetsArray.length / 4;
-    if (screenWidthBudgets > screenWidthExpenses) {
-      setScreenWidthExpenses(screenWidthBudgets);
+    let sum = 0.0;
+    budgetValuesArray.push(0);
+    budgetLabelsArray.push("");
+    for (let i = 0; i < budgetsArray.length; i++) {
+      console.log(budgetsArray[i].amount);
+      budgetLabelsArray.push(budgetsArray[i].budgetName.substring(0, 10));
+      sum = sum + budgetsArray[i].amount / 1000;
+      budgetValuesArray.push(sum);
     }
+    let screenW = budgetsArray.length / 4;
     setScreenWidthBudgets(screenWidth * (screenW < 1 ? 1 : screenW));
-    setBudgetLabels(budgetLabelsArray);
-    setBudgetValues(budgetValuesArray);
+
+    let labelRev = budgetLabelsArray.reverse();
+    let valuesRev = budgetValuesArray.reverse();
+
+    setBudgetLabels(labelRev);
+    setBudgetValues(valuesRev);
   };
 
   const handleLoadExpensesChart = (budget) => {
     let expensesLabelsArray = [];
     let expensesValuesArray = [];
-    let expenses = expensesByBudgetUtils.handleGetExpenseByBudget(
+    const expenses = Utilities.filterArrayByProperty(
       EXPENSES_BY_BUDGET,
       "budgetKey",
       budget.index
     );
-
-    expenses.forEach((expense) => {
-      expensesLabelsArray.push(moment(expense.index).format("DD"));
-      expensesValuesArray.push((expense.amount / 1000).toFixed(1));
-    });
-
+    let sum = 0.0;
+    const expensesSort = Utilities.sortArrayByIndex(expenses, "index");
+    expensesLabelsArray.push("");
+    expensesValuesArray.push(0);
+    for (let i = 0; i < expensesSort.length; i++) {
+      expensesLabelsArray.push(moment(expensesSort[i].index).format("DD/MM"));
+      sum = sum + expensesSort[i].amount / 1000;
+      expensesValuesArray.push(sum);
+    }
     let screenW = expenses.length / 8;
     setScreenWidthExpenses(screenWidth * (screenW < 1 ? 1 : screenW));
-    if (screenWidthBudgets > screenWidthExpenses) {
-      setScreenWidthExpenses(screenWidthBudgets);
-    }
-    
-    setExpensesLabels(expensesLabelsArray);
-    setExpensesValues(expensesValuesArray);
+
+    let labelRev = expensesLabelsArray.reverse();
+    let valuesRev = expensesValuesArray.reverse();
+
+    setExpensesLabels(labelRev);
+    setExpensesValues(valuesRev);
   };
 
   const handleSelectPeriod = (period) => {
+    console.log(period);
     setSelectedPeriod(period);
+    const budgetsArray = Utilities.filterArrayByProperty(
+      BUDGETS_BY_PERIOD,
+      "periodKey",
+      period.index
+    );
+    const budgetsSort = Utilities.sortArrayByIndex(budgetsArray, "index");
+    setSelectBudgets(budgetsSort);
+    handleLoadBudgetChart(period);
+    handleLoadBudgetChart(period);
+    setSelectedBudget(budgetsSort[0]);
   };
 
   const handleSelectBudget = (budget) => {
@@ -175,48 +189,123 @@ const Summary = ({ navigation }) => {
   };
 
   return (
-    <ScrollView horizontal={true}>
-      <View
-        style={{
-          ...MainStyleSheet.backView,
-          backgroundColor: theme.colors.background,
-          width: screenWidthExpenses,
-        }}
-      >
-        <ScrollView>
-          <View
-            style={{
-              ...MainStyleSheet.frontView,
-              backgroundColor: theme.colors.background,
-              width: screenWidthExpenses,
-            }}
+    <View
+      style={{
+        ...MainStyleSheet.backView,
+        backgroundColor: theme.colors.background,
+      }}
+    >
+      <ScrollView>
+        <View
+          style={{
+            ...MainStyleSheet.frontView,
+            backgroundColor: theme.colors.background,
+          }}
+        >
+          <IconButton
+            mode="outlined"
+            icon={() => (
+              <Ionicons
+                name="wallet"
+                size={Config.ICON_SIZE}
+                style={{
+                  color: theme.colors.primary,
+                }}
+              />
+            )}
+            onPress={() => setOpenPeriods(true)}
+          />
+          <Text
+            style={{ color: theme.colors.onBackground }}
+            variant="titleMedium"
           >
-            <IconButton
-              mode="outlined"
-              icon={() => (
-                <Ionicons
-                  name="wallet"
-                  size={Config.ICON_SIZE}
+            {selectPeriods !== null
+              ? Utilities.getFormatPeriodDate(
+                  selectPeriods.startData,
+                  selectPeriods.endDate
+                )
+              : ""}
+          </Text>
+          {budgetValues.length !== 0 ? (
+            <ScrollView horizontal={true}>
+              <ScrollView horizontal={true}>
+                <LineChart
+                  data={{
+                    labels: budgetLabels,
+                    datasets: [
+                      {
+                        data: budgetValues,
+
+                        //withDots: false, //pone los puntos
+                        legend: ["Rainy Days"], // optional
+                      },
+                    ],
+                  }}
+                  width={screenWidthBudgets} // from react-native
+                  height={250}
+                  //yAxisLabel="$"
+                  //yAxisSuffix="k"
+                  formatYLabel={(yValue) => {
+                    return (
+                      Utilities.getLocaleCurrency(yValue, "es-CR", "CRC") + "k"
+                    );
+                  }}
+                  fromNumber={selectedPeriod.amount / 1000}
+                  yAxisInterval={1} // optional, defaults to 1
+                  fromZero={true}
+                  onDataPointClick={({
+                    index,
+                    value,
+                    dataset,
+                    getColor,
+                    x,
+                    y,
+                  }) => {
+                    console.log(
+                      parseInt(selectBudgets.length) > parseInt(index)
+                    );
+                    console.log(selectBudgets.length);
+                    console.log(index);
+
+                    if (parseInt(selectBudgets.length) > parseInt(index)) {
+                      handleSelectBudget(selectBudgets[index]);
+                    } else {
+                      console.log("este indice no esta " + index);
+                    }
+                  }}
+                  renderDotContent={({ x, y, index, indexData }) => {
+                    return (
+                      <View
+                        key={index}
+                        style={{
+                          position: "absolute",
+                          top: y - 30,
+                          left: x - 15,
+                        }}
+                      >
+                        <Text style={{ fontSize: 10 }}>
+                          {Utilities.getLocaleCurrency(
+                            indexData,
+                            "es-CR",
+                            "CRC"
+                          ) + "k "}
+                        </Text>
+                      </View>
+                    );
+                  }}
+                  chartConfig={chartConfig}
+                  withInnerLines={false}
+                  withVerticalLines={false}
+                  withHorizontalLines={false}
+                  yLabelsOffset={18}
+                  bezier
                   style={{
-                    color: theme.colors.primary,
+                    marginVertical: 8,
+                    borderRadius: 7,
                   }}
                 />
-              )}
-              onPress={() => setOpenPeriods(true)}
-            />
-            <Text
-              style={{ color: theme.colors.onBackground }}
-              variant="titleMedium"
-            >
-              {selectPeriods !== null
-                ? Utilities.getFormatPeriodDate(
-                    selectPeriods.startData,
-                    selectPeriods.endDate
-                  )
-                : ""}
-            </Text>
-            {budgetValues.length !== 0 ? (
-              <BarChart
+              </ScrollView>
+              {/** <BarChart
                 //style={graphStyle}
                 data={{
                   labels: budgetLabels,
@@ -241,35 +330,24 @@ const Summary = ({ navigation }) => {
                   );
                 }}
                 withInnerLines={false}
-                fromNumber={SELECTED_PERIOD.amount / 1000}
+                fromNumber={selectedPeriod.amount / 1000}
                 bezier
                 style={{
                   marginVertical: 8,
                   borderRadius: 7,
                 }}
-              />
-            ) : null}
+              />*/}
+            </ScrollView>
+          ) : null}
 
-            <IconButton
-              mode="outlined"
-              icon={() => (
-                <MaterialCommunityIcons
-                  name={Config.BUDGET_ICON}
-                  size={Config.ICON_SIZE}
-                  style={{
-                    color: theme.colors.primary,
-                  }}
-                />
-              )}
-              onPress={() => handleOpenSelectBudget()}
-            />
-            <Text
-              style={{ color: theme.colors.onBackground }}
-              variant="titleMedium"
-            >
-              {selectedBudget !== null ? selectedBudget.budgetName : ""}
-            </Text>
-            {expensesValues.length !== 0 ? (
+          <Text
+            style={{ color: theme.colors.onBackground, margin: "3%" }}
+            variant="titleMedium"
+          >
+            {selectedBudget !== null ? selectedBudget.budgetName : ""}
+          </Text>
+          {expensesValues.length !== 0 ? (
+            <ScrollView horizontal={true}>
               <LineChart
                 data={{
                   labels: expensesLabels,
@@ -283,7 +361,7 @@ const Summary = ({ navigation }) => {
                   ],
                 }}
                 width={screenWidthExpenses} // from react-native
-                height={220}
+                height={250}
                 //yAxisLabel="$"
                 //yAxisSuffix="k"
                 formatYLabel={(yValue) => {
@@ -291,7 +369,7 @@ const Summary = ({ navigation }) => {
                     Utilities.getLocaleCurrency(yValue, "es-CR", "CRC") + "k"
                   );
                 }}
-                fromNumber={BUDGETS_BY_PERIOD[2].amount / 1000}
+                fromNumber={selectedBudget.amount / 1000}
                 yAxisInterval={1} // optional, defaults to 1
                 fromZero={true}
                 yla
@@ -336,29 +414,29 @@ const Summary = ({ navigation }) => {
                   borderRadius: 7,
                 }}
               />
-            ) : null}
-          </View>
-        </ScrollView>
-        {selectPeriods.length !== 0 ? (
-          <SelectModal
-            open={openPeriods}
-            close={setOpenPeriods.bind(null)}
-            items={selectPeriods}
-            setValue={handleSelectPeriod.bind(null)}
-            title={"Seleccione un periodo"}
-          />
-        ) : null}
-        {selectBudgets.length !== 0 ? (
-          <SelectModal
-            open={openBudgets}
-            close={setOpenBudgets.bind(null)}
-            items={selectBudgets}
-            setValue={handleSelectBudget.bind(null)}
-            title={"Seleccione un presupuesto"}
-          />
-        ) : null}
-      </View>
-    </ScrollView>
+            </ScrollView>
+          ) : null}
+        </View>
+      </ScrollView>
+      {selectPeriods.length !== 0 ? (
+        <SelectModal
+          open={openPeriods}
+          close={setOpenPeriods.bind(null)}
+          items={selectPeriods}
+          setValue={handleSelectPeriod.bind(null)}
+          title={"Seleccione un periodo"}
+        />
+      ) : null}
+      {selectBudgets.length !== 0 ? (
+        <SelectModal
+          open={openBudgets}
+          close={setOpenBudgets.bind(null)}
+          items={selectBudgets}
+          setValue={handleSelectBudget.bind(null)}
+          title={"Seleccione un presupuesto"}
+        />
+      ) : null}
+    </View>
   );
 };
 

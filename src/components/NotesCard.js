@@ -38,6 +38,7 @@ const NotesCard = (props) => {
       key={props.notes.index}
     >
       <Card
+        key={props.notes.index}
         style={{
           margin: "2%",
         }}

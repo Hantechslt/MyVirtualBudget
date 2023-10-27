@@ -11,7 +11,6 @@ import {
   useTheme,
 } from "react-native-paper";
 import MainStyleSheet from "@Styles/MainStyleSheet";
-import { MainContext } from "@Contexts/MainContext";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import Utilities from "@Utilities/Utilities";
@@ -22,16 +21,15 @@ const PeriodCard = (props) => {
   const navigation = useNavigation();
 
   const [formatDate, setFormatDate] = useState("");
-  const { SELECTED_PERIOD } = useContext(MainContext);
-
+  
   useEffect(() => {
     setFormatDate(
       Utilities.getFormatPeriodDate(
-        SELECTED_PERIOD.startDate,
-        SELECTED_PERIOD.endDate
+        props.selected.startDate,
+        props.selected.endDate
       )
     );
-  }, [SELECTED_PERIOD]);
+  }, [props.selected]);
 
   return (
     <Card
@@ -52,6 +50,7 @@ const PeriodCard = (props) => {
             Periodo
           </Text>
         }
+        titleNumberOfLines={2}
         subtitle={<Text variant="bodySmall">{formatDate}</Text>}
         left={(props) => (
           <Avatar.Icon
@@ -102,7 +101,7 @@ const PeriodCard = (props) => {
               variant="titleLarge"
             >
               {Utilities.getLocaleCurrency(
-                SELECTED_PERIOD.amount,
+                props.selected.amount,
                 "en-CR",
                 "CRC"
               )}
@@ -114,11 +113,7 @@ const PeriodCard = (props) => {
               style={{ fontWeight: "bold", color: theme.colors.emeraldGreen }}
               variant="titleLarge"
             >
-              {Utilities.getLocaleCurrency(
-                SELECTED_PERIOD.used,
-                "en-CR",
-                "CRC"
-              )}
+              {Utilities.getLocaleCurrency(props.selected.used, "en-CR", "CRC")}
             </Text>
           </View>
         </View>
@@ -159,7 +154,7 @@ const PeriodCard = (props) => {
             )}
             onPress={() =>
               navigation.navigate("CreateUpdateBudget", {
-                period: SELECTED_PERIOD,
+                period: props.selected,
                 budget: null,
               })
             }
@@ -176,7 +171,7 @@ const PeriodCard = (props) => {
             )}
             onPress={() =>
               navigation.navigate("CreateUpdatePeriod", {
-                period: SELECTED_PERIOD,
+                period: props.selected,
               })
             }
           />

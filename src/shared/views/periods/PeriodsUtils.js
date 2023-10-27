@@ -22,7 +22,8 @@ class PeriodsUtils {
     };
 
     const updatedPeriods = [...this.PERIODS, objPeriodStorage];
-    const sortedPeriods = Utilities.sortByIndex(updatedPeriods, "index");
+    const sortedPeriods = Utilities.sortArrayByIndex(updatedPeriods, "index");
+    
     this.updatePeriods(sortedPeriods);
   }
   /**
@@ -36,7 +37,7 @@ class PeriodsUtils {
       objPeriod.index
     );
     const updatedPeriods = [...this.PERIODS, objPeriod];
-    const sortedPeriods = Utilities.sortByIndex(updatedPeriods, "index");
+    const sortedPeriods = Utilities.sortArrayByIndex(updatedPeriods, "index");
     this.updatePeriods(sortedPeriods);
   }
 
@@ -50,8 +51,17 @@ class PeriodsUtils {
       "index",
       objPeriod.index
     );
+    console.log("removedPeriod");
+        console.log(removedPeriod);
+
     this.updatePeriods(removedPeriod);
   }
+
+  /**
+   * Agregar propiedad extras a los datos de periodo esto para utilizarlo en los select
+   * @param {*} periods
+   * @returns
+   */
   handleAddLabelDesc(periods) {
     periods.forEach((period) => {
       period["label"] = Utilities.getFormatPeriodDate(

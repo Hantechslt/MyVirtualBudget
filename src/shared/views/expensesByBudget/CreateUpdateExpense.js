@@ -91,7 +91,7 @@ const CreateUpdateExpense = ({ navigation, route }) => {
 
   const handleCreateUpdateExpense = (isCreate) => {
     let objPeriod = {
-      index: SELECTED_PERIOD.index,
+      index: SELECTED_PERIOD[0].index,
     };
     let objBudget = {
       periodKey: budget.periodKey,
@@ -105,10 +105,10 @@ const CreateUpdateExpense = ({ navigation, route }) => {
     };
     if (isCreate) {
       objPeriod["used"] =
-        parseFloat(SELECTED_PERIOD.used) + parseFloat(originalValue);
+        parseFloat(SELECTED_PERIOD[0].used) + parseFloat(originalValue);
 
-      SELECTED_PERIOD["used"] =
-        parseFloat(SELECTED_PERIOD.used) + parseFloat(originalValue);
+      SELECTED_PERIOD[0]["used"] =
+        parseFloat(SELECTED_PERIOD[0].used) + parseFloat(originalValue);
 
       const budgetResult = parseFloat(budget.used) + parseFloat(originalValue);
       objBudget["used"] = budgetResult;
@@ -131,7 +131,7 @@ const CreateUpdateExpense = ({ navigation, route }) => {
           setSnackbarVisible(true);
           expensesByBudgetUtils.handleCreateExpense(objExpense);
           budgetByPeriodUtils.handleUpdateBudget(budgetUpdate);
-          periodsUtils.handleUpdatePeriods(SELECTED_PERIOD);
+          periodsUtils.handleUpdatePeriods(SELECTED_PERIOD[0]);
         } else {
           setSnackbarType("ERROR");
           setSnackbarVisible(true);
@@ -144,14 +144,14 @@ const CreateUpdateExpense = ({ navigation, route }) => {
 
       if (parseFloat(originalValue) >= parseFloat(expense.amount)) {
         periodResult =
-          parseFloat(SELECTED_PERIOD.used) +
+          parseFloat(SELECTED_PERIOD[0].used) +
           (parseFloat(originalValue) - parseFloat(expense.amount));
         budgetResult =
           budget.used +
           (parseFloat(originalValue) - parseFloat(expense.amount));
       } else {
         periodResult =
-          parseFloat(SELECTED_PERIOD.used) -
+          parseFloat(SELECTED_PERIOD[0].used) -
           (parseFloat(expense.amount) - parseFloat(originalValue));
         budgetResult =
           parseFloat(budget.used) -
@@ -178,7 +178,7 @@ const CreateUpdateExpense = ({ navigation, route }) => {
           setSnackbarVisible(true);
           expensesByBudgetUtils.handleUpdateExpense(objExpense);
           budgetByPeriodUtils.handleUpdatePeriods(budgetUpdate);
-          periodsUtils.handleUpdatePeriods(SELECTED_PERIOD);
+          periodsUtils.handleUpdatePeriods(SELECTED_PERIOD[0]);
         } else {
           setSnackbarType("ERROR");
           setSnackbarVisible(true);

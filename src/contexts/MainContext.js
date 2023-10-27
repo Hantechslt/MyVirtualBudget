@@ -3,10 +3,10 @@ import React, { createContext, useReducer } from "react";
 
 // Define tus variables iniciales
 const mainVariables = {
-  PERIODS: null,
-  BUDGETS_BY_PERIOD: null,
-  EXPENSES_BY_BUDGET: null,
-  SELECTED_PERIOD: null,
+  PERIODS: [],
+  BUDGETS_BY_PERIOD: [],
+  EXPENSES_BY_BUDGET: [],
+  SELECTED_PERIOD: [],
   SELECTED_THEME: CustomTheme.DarkTheme,
 };
 

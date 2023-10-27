@@ -8,7 +8,7 @@ class ExpensesByBudgetUtils {
 
   handleCreateExpense(objExpense) {
     const updatedExpenses = [...this.EXPENSES_BY_BUDGET, objExpense];
-    const sortedExpenses = Utilities.sortByIndex(updatedExpenses, "index");
+    const sortedExpenses = Utilities.sortArrayByIndex(updatedExpenses, "index");
     this.updateExpensesByBudget(sortedExpenses);
   }
 
@@ -19,7 +19,7 @@ class ExpensesByBudgetUtils {
       objExpense.index
     );
     const updatedExpenses = [...this.EXPENSES_BY_BUDGET, objExpense];
-    const sortedExpenses = Utilities.sortByIndex(updatedExpenses, "index");
+    const sortedExpenses = Utilities.sortArrayByIndex(updatedExpenses, "index");
 
     this.updateExpensesByBudget(sortedExpenses);
   }
@@ -33,19 +33,34 @@ class ExpensesByBudgetUtils {
     this.updateExpensesByBudget(removedExpense);
   }
 
+  /**
+   * Retornar todos los 
+   * @param {*} expenses 
+   * @param {*} property 
+   * @param {*} value 
+   * @returns 
+   */
   handleGetExpenseByBudget(expenses, property, value) {
     return expenses.filter((expense) => expense[property] === value);
   }
 
+  /**
+   * Retornar todos los gastos de los presupuestos ordenados por el index
+   * @param {*} budgets
+   * @returns
+   */
   handleGetExpensesByBudget(budgets) {
     const expensesByBudget = [];
     budgets.forEach((budget) => {
-      for (let key in budget.ExpensesByBudget) {        
+      for (let key in budget.ExpensesByBudget) {
         expensesByBudget.push(budget.ExpensesByBudget[key]);
       }
     });
-
-    return expensesByBudget;
+    const expensesByBudgetSort = Utilities.sortArrayByIndex(
+      expensesByBudget,
+      "index"
+    );
+    return expensesByBudgetSort;
   }
 }
 

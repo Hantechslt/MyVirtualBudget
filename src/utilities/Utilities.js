@@ -59,11 +59,37 @@ class Utilities {
     return ratio;
   }
 
+  /**
+   * Remover un item de un array por una propiedad especifica
+   * Precaución: Se elimina todas las coincidencias.
+   * @param {*} array
+   * @param {*} property
+   * @param {*} value
+   * @returns
+   */
   removeArrayItem(array, property, value) {
     return array.filter((item) => item[property] !== value);
   }
-  sortByIndex(array, property) {
+
+  /**
+   * Ordenar un arrreglo por un apropiedad especifica
+   * @param {*} array
+   * @param {*} property
+   * @returns
+   */
+  sortArrayByIndex(array, property) {
     return array.sort((a, b) => b[property] - a[property]);
+  }
+
+  /**
+   * Filtar un arreglo por una propiedad especifica
+   * @param {*} array
+   * @param {*} property
+   * @param {*} value
+   * @returns
+   */
+  filterArrayByProperty(array, property, value) {
+    return array.filter((data) => data[property] === value);
   }
 }
 

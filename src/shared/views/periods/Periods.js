@@ -1,8 +1,8 @@
 import React, { useEffect, useContext, useCallback, useState } from "react";
 import { useFocusEffect } from "@react-navigation/native";
 
-import { View, ScrollView } from "react-native";
-import { useTheme } from "react-native-paper";
+import { View, ScrollView, Text } from "react-native";
+import { useTheme, Button } from "react-native-paper";
 import MainStyleSheet from "@Styles/MainStyleSheet";
 import BudgetByPeriodCard from "@Components/BudgetByPeriodCard";
 import PeriodCard from "@Components/PeriodCard";
@@ -38,49 +38,60 @@ const Budgets = ({ navigation }) => {
     updateExpensesByBudget
   );
   const periodsUtils = new PeriodsUtils(PERIODS, updatePeriods);
-  const [budgetByPeriodTemp, setBudgetByPeriodTemp] = useState([]);
+
+  const [budgets, setBudgets] = useState([]);
   const [loading, setLoading] = useState(false);
 
   const [page, setPage] = useState(1);
   const [visibleData, setVisibleData] = useState(5); // Cantidad de elementos visibles
   const [openSelectModal, setOpenSelectModal] = useState(false);
 
+  const [selectedPeriod, setSelectedPeriod] = useState([]);
+  const [hasPeriod, setHasPeriod] = useState(true);
+
   /**
    * O: Obtener los datos de la base de datos y almacenarlos en memoria local para aumentar el rendimiento
    */
   useEffect(() => {
-    console.log(Config);
-    if (PERIODS === null) {
+    if (PERIODS.length === 0) {
       setLoading(true);
-
+      updateSelectedPeriod([]);
+      setSelectedPeriod([]);
       PeriodsApi.getPeriodList().then((periodList) => {
+        console.log("Volvi a passar por aqui");
         if (periodList.length !== 0) {
           setPage(page + 1);
-          //Obtenemos todos los periodos
-          const updatePeriod = periodList.reverse();
+          //Obtenemos todos los periodos y los ordenamos por el index
+          const updatePeriod = Utilities.sortArrayByIndex(periodList, "index");
           //Obtenemos todos los presupuestos.
           const budgetByPeriod =
             budgetByPeriodUtils.handleGetBudgetsByPeriod(updatePeriod);
-
           //Obtenemos todos los gastos de los presupuestos
           const ExpensesByPeriod =
             expensesByBudgetUtils.handleGetExpensesByBudget(budgetByPeriod);
+          //Agregar label y descripción al arreglo de periodo
+          const addLabelDescPeriod =
+            periodsUtils.handleAddLabelDesc(updatePeriod);
 
           //Almacenamos la información en memoria
+          setSelectedPeriod([addLabelDescPeriod[0]]);
+
+          updateSelectedPeriod([...SELECTED_PERIOD, addLabelDescPeriod[0]]);
           updateExpensesByBudget(ExpensesByPeriod);
           updateBudgetsByPeriod(budgetByPeriod);
-          const labelDescArray = periodsUtils.handleAddLabelDesc(updatePeriod);
-          updatePeriods(labelDescArray);
+          updatePeriods(addLabelDescPeriod);
         } else {
-          navigation.navigate("CreateUpdatePeriod", {
+          setHasPeriod(false);
+          /*navigation.navigate("CreateUpdatePeriod", {
             period: null,
-          });
+          });*/
         }
         setLoading(false);
       });
     } else {
-      updateSelectedPeriod(PERIODS[0]);
-      handleRefreshBudgets(PERIODS[0].index);
+      setHasPeriod(true);
+      setSelectedPeriod(SELECTED_PERIOD);
+      handleRefreshBudgets(SELECTED_PERIOD[0].index);
     }
   }, [PERIODS]);
 
@@ -89,8 +100,8 @@ const Budgets = ({ navigation }) => {
    */
   useFocusEffect(
     useCallback(() => {
-      if (PERIODS !== null) {
-        handleRefreshBudgets(SELECTED_PERIOD.index);
+      if (PERIODS.length !== 0) {
+        handleRefreshBudgets(selectedPeriod[0].index);
       }
     }, [BUDGETS_BY_PERIOD, EXPENSES_BY_BUDGET])
   );
@@ -100,12 +111,12 @@ const Budgets = ({ navigation }) => {
    * @param {*} index
    */
   const handleRefreshBudgets = (index) => {
-    const updateBudgets = budgetByPeriodUtils.handleGetBudgetByPeriod(
-      BUDGETS_BY_PERIOD !== null ? BUDGETS_BY_PERIOD : [],
+    const updateBudgets = Utilities.filterArrayByProperty(
+      BUDGETS_BY_PERIOD,
       "periodKey",
       index
     );
-    setBudgetByPeriodTemp(updateBudgets);
+    setBudgets(updateBudgets);
   };
 
   /**
@@ -127,8 +138,11 @@ const Budgets = ({ navigation }) => {
    */
   const handleSelectedPeriod = (period) => {
     setVisibleData(5);
-    handleRefreshBudgets(period.index);
-    updateSelectedPeriod(period);
+    if (period.index !== selectedPeriod.index) {
+      handleRefreshBudgets(period.index);
+      setSelectedPeriod([period]);
+      updateSelectedPeriod([period]);
+    }
   };
 
   /**
@@ -148,18 +162,30 @@ const Budgets = ({ navigation }) => {
       >
         {/**Componente LoadScreen */}
         <LoadScreen loading={loading} />
-
+        {!hasPeriod ? (
+          <Button
+            mode="contained-tonal"
+            onPress={() => {
+              navigation.navigate("CreateUpdatePeriod", {
+                period: null,
+              });
+            }}
+            style={MainStyleSheet.primaryButton}
+          >
+            Nuevo periodo
+          </Button>
+        ) : null}
         {/**Componente PeriodCard */}
-        {SELECTED_PERIOD !== null ? (
+        {selectedPeriod.length !== 0 ? (
           <PeriodCard
-            selected={SELECTED_PERIOD}
+            selected={selectedPeriod[0]}
             periods={PERIODS}
             handleOpenSelect={setOpenSelectModal.bind(null)}
           />
         ) : null}
 
         {/**  Componente SelectModal*/}
-        {PERIODS !== null ? (
+        {PERIODS.length !== 0 ? (
           <SelectModal
             open={openSelectModal}
             close={setOpenSelectModal.bind(null)}
@@ -171,13 +197,10 @@ const Budgets = ({ navigation }) => {
 
         {/** BudgetByPeriodCard*/}
         <ScrollView onScroll={handleScroll}>
-          {budgetByPeriodTemp.length !== 0
-            ? budgetByPeriodTemp.slice(0, visibleData).map((budgetByPeriod) => {
+          {budgets.length !== 0
+            ? budgets.slice(0, visibleData).map((budget) => {
                 return (
-                  <BudgetByPeriodCard
-                    key={budgetByPeriod.index}
-                    budget={budgetByPeriod}
-                  />
+                  <BudgetByPeriodCard key={budget.index} budget={budget} />
                 );
               })
             : null}

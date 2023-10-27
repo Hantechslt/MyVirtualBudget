@@ -68,6 +68,7 @@ const CreateUpdatePeriod = ({ navigation, route }) => {
   }, []);
 
   const initVariables = () => {
+    setIsEdit(false);
     setStartDate(Utilities.getDate(0));
     setEndDate(Utilities.getDate(30));
     setValue("");
@@ -165,6 +166,7 @@ const CreateUpdatePeriod = ({ navigation, route }) => {
       if (res) {
         console.log("Periodo Removido");
         periodsUtils.handleRemovePeriods(period);
+        initVariables();
       }
     });
   };

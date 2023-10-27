@@ -215,6 +215,7 @@ function DrawerNav() {
         <CustomDrawerContent {...props}></CustomDrawerContent>
       )}
       screenOptions={{
+        swipeEnabled: false,
         drawerStyle: {
           backgroundColor: theme.colors.background,
           width: "75%",

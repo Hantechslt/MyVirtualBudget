@@ -1,9 +1,9 @@
-import { ref, get, update } from "@react-native-firebase/database";
+import { ref, get } from "@react-native-firebase/database";
 
 import Firebase from "@FirebaseDB/Firebase";
 
 class MyBudgetApp {
-  getMyAppInfo = () => {    
+  getMyAppInfo = () => {
     const dbRef = ref(Firebase.getInstance(), "/MyBudgetDEV");
     const data = [];
     return get(dbRef)
@@ -14,16 +14,6 @@ class MyBudgetApp {
       })
       .then(() => {
         return data;
-      })
-      .catch((error) => {
-        console.error(error);
-      });
-  };
-
-  updateBudgetsList = (updates) => {
-    return update(dbRef, updates)
-      .then(() => {
-        console.log("Update successful");
       })
       .catch((error) => {
         console.error(error);

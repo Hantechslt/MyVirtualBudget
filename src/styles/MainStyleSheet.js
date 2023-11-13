@@ -51,7 +51,7 @@ const MainStyleSheet = StyleSheet.create({
   },
   frontView: {
     height: "95%",
-    marginHorizontal: "2%",
+    marginHorizontal: "3%",
   },
   primaryCard: {
     borderWidth: 0.5,

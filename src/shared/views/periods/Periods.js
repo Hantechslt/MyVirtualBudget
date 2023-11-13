@@ -37,6 +37,7 @@ const Budgets = ({ navigation }) => {
     EXPENSES_BY_BUDGET,
     updateExpensesByBudget
   );
+  
   const periodsUtils = new PeriodsUtils(PERIODS, updatePeriods);
 
   const [budgets, setBudgets] = useState([]);

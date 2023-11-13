@@ -9,6 +9,8 @@ const ADD_EXPENSE_ICON = "money-check-alt";
 const REPORT_ICON = "file-document-outline";
 const CHANGE_PERIOD = "rotate-3d-variant";
 const SUMMARY_ICON = "chart-bell-curve";
+const DELETE_ICON = "delete";
+
 
 
 export default {
@@ -23,4 +25,5 @@ export default {
   REPORT_ICON,
   CHANGE_PERIOD,
   SUMMARY_ICON,
+  DELETE_ICON,
 };

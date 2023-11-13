@@ -49,8 +49,7 @@ const PeriodCard = (props) => {
           >
             Periodo
           </Text>
-        }
-        titleNumberOfLines={2}
+        }        
         subtitle={<Text variant="bodySmall">{formatDate}</Text>}
         left={(props) => (
           <Avatar.Icon

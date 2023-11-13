@@ -118,7 +118,11 @@ const BudgetByPeriodCard = (props) => {
                 }}
               />
             )}
-            onPress={() => {}}
+            onPress={() =>
+              navigation.navigate("ExpensesByBudget", {
+                budget: props.budget,                
+              })
+            }
           />
           <IconButton
             icon={() => (

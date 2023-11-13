@@ -1,25 +1,12 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect } from "react";
 
-import {
-  useTheme,
-  TextInput,
-  Button,
-  Text,
-  Avatar,
-  IconButton,
-  Divider,
-  List,
-  Tooltip,
-  Card,
-} from "react-native-paper";
-import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
+import { useTheme } from "react-native-paper";
 
 import { View, ScrollView } from "react-native";
 import MainStyleSheet from "@Styles/MainStyleSheet";
 import Config from "@Config/Config";
 import TipsCard from "@Components/TipsCard";
 const FinancialTips = () => {
-
   const [tips, setTips] = useState([]);
   const theme = useTheme();
 
@@ -46,8 +33,8 @@ const FinancialTips = () => {
           }}
         >
           {tips.length !== 0
-            ? tips.map((tip,i) => {
-                return <TipsCard  key={i} tip={tip} />;
+            ? tips.map((tip, i) => {
+                return <TipsCard key={i} tip={tip} />;
               })
             : null}
         </View>

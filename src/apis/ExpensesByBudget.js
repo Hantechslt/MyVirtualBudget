@@ -88,23 +88,38 @@ class ExpensesByBudget {
    * @param {*} context
    * @returns
    */
-  removeExpense = (objBudget, objExpense) => {
-    const refBD = FirebaseRefStructure.CUDExpensesStructure(
-      auth().currentUser.uid,
+  removeExpense = (objPeriod, objBudget, objExpense) => {
+    const uid = auth().currentUser.uid;
+    const refPeriod = FirebaseRefStructure.CUDPeriodsStructure(
+      uid,
+      objPeriod.index,
+      Config.ENVIRONMENT
+    );
+    const refBudget = FirebaseRefStructure.CUDBudgetsStructure(
+      uid,
       objBudget.periodKey,
+      objBudget.index,
+      Config.ENVIRONMENT
+    );
+    const refExpense = FirebaseRefStructure.CUDExpensesStructure(
+      uid,
+      objPeriod.index,
       objBudget.index,
       objExpense.index,
       Config.ENVIRONMENT
     );
-    const dbRef = ref(firebaseSingleton.db, refBD);
-    return remove(dbRef)
-      .then(() => {
-        return true;
-      })
-      .catch((error) => {
-        console.error(error);
-        return false;
-      });
+
+    const dbRefPeriod = ref(firebaseSingleton.db, refPeriod);
+    const dbRefBudget = ref(firebaseSingleton.db, refBudget);
+    const dbRefExpense = ref(firebaseSingleton.db, refExpense);
+
+    return Promise.all([
+      update(dbRefPeriod, objPeriod),
+      update(dbRefBudget, objBudget),
+      remove(dbRefExpense, objExpense),
+    ]).then(() => {
+      return true;
+    });
   };
 }
 export default new ExpensesByBudget();

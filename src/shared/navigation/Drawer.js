@@ -28,6 +28,7 @@ import MainStyleSheet from "@Styles/MainStyleSheet";
 import Summary from "@Summary/Summary";
 import Notes from "@Notes/Notes";
 import FinancialTips from "@FinancialTips/FinancialTips";
+import Test from "@Components/Test"
 const Drawer = createDrawerNavigator();
 
 function DrawerNav() {
@@ -68,7 +69,7 @@ function DrawerNav() {
   const [settingOptions, setSettingOptions] = useState([
     {
       label: "Generales",
-      navigate: "",
+      navigate: "Test",
       iconName: "account-cog-outline",
     },
 
@@ -272,6 +273,21 @@ function DrawerNav() {
       <Drawer.Screen
         name="FinancialTips"
         component={FinancialTips}
+        options={{
+          headerStyle: {
+            backgroundColor: theme.colors.background,
+          },
+          headerTintColor: theme.colors.primary,
+          headerLeftContainerStyle: {
+            backgroundColor: theme.colors.background,
+          },
+          title: "Tips financieros",
+        }}
+      />
+
+      <Drawer.Screen
+        name="Test"
+        component={Test}
         options={{
           headerStyle: {
             backgroundColor: theme.colors.background,

@@ -63,7 +63,11 @@ const CreateUpdateExpense = ({ navigation, route }) => {
   useEffect(() => {
     if (expense !== null) {
       setIsEdit(true);
+      setExpenseName(expense.expenseName);
+      setValue(String(expense.amount));
+      setOriginalValue(String(expense.amount));
     }
+    
   }, []);
 
   const handleBlur = () => {
@@ -139,8 +143,8 @@ const CreateUpdateExpense = ({ navigation, route }) => {
         setLoading(false);
       });
     } else {
-      const periodResult = 0.0;
-      const budgetResult = 0.0;
+      let periodResult = 0.0;
+      let budgetResult = 0.0;
 
       if (parseFloat(originalValue) >= parseFloat(expense.amount)) {
         periodResult =
@@ -177,7 +181,7 @@ const CreateUpdateExpense = ({ navigation, route }) => {
           setSnackbarType("SUCCESS");
           setSnackbarVisible(true);
           expensesByBudgetUtils.handleUpdateExpense(objExpense);
-          budgetByPeriodUtils.handleUpdatePeriods(budgetUpdate);
+          budgetByPeriodUtils.handleUpdateBudget(budgetUpdate);
           periodsUtils.handleUpdatePeriods(SELECTED_PERIOD[0]);
         } else {
           setSnackbarType("ERROR");
@@ -187,29 +191,7 @@ const CreateUpdateExpense = ({ navigation, route }) => {
       });
     }
   };
-  const handleDeleteExpense = () => {
-    objBudget = {
-      index: budget.index,
-      periodKey: budget.periodKey,
-    };
-    objSpending = {
-      index: expense.index,
-    };
-    setLoading(true);
-
-    ExpensesByBudget.removeExpense(objBudget, objSpending).then((res) => {
-      if (res) {
-        setSnackbarType("SUCCESS");
-        setSnackbarVisible(true);
-        setIsEdit(false);
-        initVariables();
-      } else {
-        setSnackbarType("ERROR");
-        setSnackbarVisible(true);
-      }
-      setLoading(false);
-    });
-  };
+  
   return (
     <View
       style={{
@@ -303,21 +285,6 @@ const CreateUpdateExpense = ({ navigation, route }) => {
               onFocus={handleFocus}
               value={value}
             />
-            {isEdit ? (
-              <IconButton
-                icon={() => (
-                  <MaterialCommunityIcons
-                    name="delete"
-                    onPress={() => handleDeleteExpense()}
-                    size={30}
-                    style={{
-                      color: theme.colors.darkRed,
-                    }}
-                  />
-                )}
-                onPress={() => {}}
-              />
-            ) : null}
           </View>
           {isEdit ? (
             <Button

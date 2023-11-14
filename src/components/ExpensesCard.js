@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { View } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 
@@ -22,10 +22,18 @@ import Config from "@Config/Config";
 const ExpensesCard = (props) => {
   const theme = useTheme();
   const navigation = useNavigation();
-  useEffect(() => {}, []);
+
+  const [budget, setBudget] = useState([]);
+  const [expense, setExpense] = useState([]);
+
+  useEffect(() => {
+    setBudget(props.budget);
+    setExpense(props.expense);
+  }, [props]);
 
   return (
     <Card
+      key={props.expense.index}
       style={{
         ...MainStyleSheet.primaryCard,
         borderColor: theme.colors.onBackground,
@@ -54,10 +62,10 @@ const ExpensesCard = (props) => {
             </Text>
           </View>
         }
-        right={(props) => (
+        right={() => (
           <View style={MainStyleSheet.viewRow}>
             <IconButton
-              {...props}
+              
               icon={() => (
                 <MaterialCommunityIcons
                   name={Config.EDIT_ICON}
@@ -67,7 +75,12 @@ const ExpensesCard = (props) => {
                   }}
                 />
               )}
-              onPress={() => {}}
+              onPress={() =>
+                navigation.navigate("CreateUpdateExpense", {
+                  budget: budget,
+                  expense: expense,
+                })
+              }
             />
             <IconButton
               icon={() => (
@@ -79,7 +92,7 @@ const ExpensesCard = (props) => {
                   }}
                 />
               )}
-              onPress={() => {}}
+              onPress={() => props.deleteAction(props.expense)}
             />
           </View>
         )}
